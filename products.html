@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>All Products — VendorConnect</title>
+
+  <link rel="stylesheet" href="styles.css">
+
+  <link rel="stylesheet" href="products.css">
+
+  
+
+
+
+<script src="auth.js"></script>
+
+  <script src="translations.js"></script>
+
+</head>
+
+<body>
+
+
+
+<header>
+
+  <a class="logo" href="index.html">
+
+    <div class="logo-icon">🏪</div>
+
+    VendorConnect
+
+  </a>
+
+  <nav><!-- nav.js --></nav>
+
+</header>
+
+
+
+<div class="page-wrap">
+
+
+
+  <div class="products-hero">
+
+    <h2>Browse All Products</h2>
+
+    <p>Fresh, local, and real — discover what Hassan's finest verified shops have on offer today.</p>
+
+    <div class="hero-chips">
+
+      <div class="hero-chip">🛒 150+ Products</div>
+
+      <div class="hero-chip">🏪 32 Verified Shops</div>
+
+      <div class="hero-chip">📍 Hassan, Karnataka</div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="filter-bar">
+
+    <div class="filter-search">
+
+      <span class="search-icon">🔍</span>
+
+      <input type="text" id="search-input" placeholder="Search products or shops..." oninput="filterProducts()">
+
+    </div>
+
+    <div class="filter-chips">
+
+      <button class="fchip active" onclick="setCategory('All', this)">All</button>
+
+      <button class="fchip" onclick="setCategory('Vegetables & Fruits', this)">🥦 Vegetables</button>
+
+      <button class="fchip" onclick="setCategory('Kirana / Grocery', this)">🛒 Grocery</button>
+
+      <button class="fchip" onclick="setCategory('Flowers', this)">🌸 Flowers</button>
+
+      <button class="fchip" onclick="setCategory('Dairy & Milk', this)">🥛 Dairy</button>
+
+      <button class="fchip" onclick="setCategory('Food & Snacks', this)">🍱 Food</button>
+
+      <button class="fchip" onclick="setCategory('Medicine & Pharmacy', this)">💊 Pharmacy</button>
+
+    </div>
+
+    <select class="sort-select" id="sort-select" onchange="filterProducts()">
+
+      <option value="default">Sort: Default</option>
+
+      <option value="price-low">Price: Low → High</option>
+
+      <option value="price-high">Price: High → Low</option>
+
+      <option value="rating">Highest Rated</option>
+
+    </select>
+
+    <div class="results-count" id="results-count">Showing 12 products</div>
+
+  </div>
+
+
+
+  <div class="products-body">
+
+    <div class="products-grid" id="products-grid"></div>
+
+    <div class="empty-state" id="empty-state">
+
+      <div class="es-icon">🔍</div>
+
+      <h3>No products found</h3>
+
+      <p>Try a different keyword or select another category.</p>
+
+    </div>
+
+  </div>
+
+
+
+  <footer>
+
+    <p data-i18n="footer.copy">© 2026 <strong>VendorConnect</strong> — Empowering local businesses in Hassan, Karnataka</p>
+
+    <div class="footer-links">
+
+      <a href="index.html">Home</a>
+
+      <a href="about.html">About</a>
+
+      <a href="contact.html">Contact</a>
+
+      <a href="products.html" data-i18n="footer.products">Products</a>
+
+      <a href="wishlist.html" data-i18n="nav.wishlist">Wishlist</a>
+
+      <a href="vendor-login.html">Vendor Login</a>
+
+      <a href="vendor-register.html">Register Shop</a>
+
+      <a href="admin-login.html">Admin</a>
+
+    </div>
+
+  </footer>
+
+</div>
+
+
+
+<!-- MODAL -->
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+
+  <div class="modal" id="modal">
+
+    <button class="modal-close" onclick="closeModal()">✕</button>
+
+    <div class="modal-img-wrap" id="modal-img"></div>
+
+    <div class="modal-body">
+
+      <div class="modal-shop-row" id="modal-shop-row"></div>
+
+      <div class="modal-product-name" id="modal-name"></div>
+
+      <div class="modal-meta-row" id="modal-meta"></div>
+
+      <div class="modal-badges" id="modal-badges"></div>
+
+      <div class="modal-desc" id="modal-desc"></div>
+
+      <div class="modal-section-title">Product Details</div>
+
+      <div class="detail-grid" id="modal-details"></div>
+
+      <div class="modal-section-title">Customer Reviews</div>
+
+      <div class="reviews-list" id="modal-reviews"></div>
+
+      <div class="modal-price-row" id="modal-price"></div>
+
+      <div class="shop-strip" id="modal-strip"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<script>
+
+  let PRODUCTS = [];
+
+  let activeCategory = 'All';
+
+
+
+  function starsHtml(n) {
+
+    return '★'.repeat(Math.floor(n)) + (n % 1 >= 0.5 ? '½' : '');
+
+  }
+
+
+
+  function getFavorites() {
+
+    return JSON.parse(localStorage.getItem('wishlist') || '[]');
+
+  }
+
+
+function toggleFav(el, id) {
+  let favorites = getFavorites();
+  if (favorites.includes(id)) {
+    favorites = favorites.filter(favId => favId !== id);
+    el.textContent = '🤍'; // Update UI state
+  } else {
+    favorites.push(id);
+    el.textContent = '❤️'; // Update UI state[cite: 1]
+  }
+  localStorage.setItem('wishlist', JSON.stringify(favorites)); // Save to local storage[cite: 1]
+}
+
+
+
+  function renderProducts(list) {
+
+    const grid  = document.getElementById('products-grid');
+
+    const empty = document.getElementById('empty-state');
+
+    const count = document.getElementById('results-count');
+
+    const favorites = getFavorites();
+
+    
+
+    grid.innerHTML = '';
+
+    if (!list.length) {
+
+      grid.style.display = 'none'; empty.style.display = 'block';
+
+      count.textContent = '0 products'; return;
+
+    }
+
+    grid.style.display = 'grid'; empty.style.display = 'none';
+
+    count.textContent = `Showing ${list.length} product${list.length !== 1 ? 's' : ''}`;
+
+    list.forEach(p => {
+
+      const isFav = favorites.includes(p._id);
+
+      const shopName = p.vendor ? p.vendor.shopName : 'Unknown Shop';
+
+      const shopEmoji = p.emoji || '📦';
+
+      const card = document.createElement('div');
+
+      card.className = 'product-card';
+
+      card.onclick = () => openModal(p._id);
+
+      card.innerHTML = `
+
+        ${p.stockStatus === 'out' ? '<div class="pc-badge popular">Out of Stock</div>' : ''}
+
+        <div class="pc-fav" onclick="event.stopPropagation();toggleFav(this, '${p._id}')">${isFav ? '❤️' : '🤍'}</div>
+
+        <div class="pc-img-outer"><div class="pc-img-wrap">${p.emoji || '📦'}</div></div>
+
+        <div class="pc-body">
+
+          <div class="pc-shop-tag">🏪 <span>${shopName}</span></div>
+
+          <div class="pc-name">${p.name}</div>
+
+          <div class="pc-desc">${p.description || ''}</div>
+
+          <div class="pc-footer">
+
+            <div class="pc-price">₹${p.price} <span class="pc-unit">${p.unit}</span></div>
+
+            <div class="pc-rating"><span class="stars">${starsHtml(p.averageRating || 0)}</span>&nbsp;${p.averageRating || 0} (${p.reviewCount || 0})</div>
+
+          </div>
+
+        </div>`;
+
+      grid.appendChild(card);
+
+    });
+
+  }
+
+
+
+  function setCategory(cat, el) {
+
+    activeCategory = cat;
+
+    document.querySelectorAll('.fchip').forEach(c => c.classList.remove('active'));
+
+    el.classList.add('active');
+
+    filterProducts();
+
+  }
+
+
+
+  function filterProducts() {
+
+    const q = document.getElementById('search-input').value.toLowerCase();
+
+    const sort = document.getElementById('sort-select').value;
+
+    let list = PRODUCTS.filter(p => {
+
+      const catOk = activeCategory === 'All' || p.category === activeCategory;
+
+      const shopName = p.vendor ? p.vendor.shopName.toLowerCase() : '';
+
+      const qOk = !q || p.name.toLowerCase().includes(q) || shopName.includes(q) || (p.description || '').toLowerCase().includes(q);
+
+      return catOk && qOk;
+
+    });
+
+    if (sort === 'price-low')  list.sort((a,b) => a.price - b.price);
+
+    if (sort === 'price-high') list.sort((a,b) => b.price - a.price);
+
+    if (sort === 'rating')     list.sort((a,b) => (b.averageRating||0) - (a.averageRating||0));
+
+    renderProducts(list);
+
+  }
+
+
+
+  function openModal(id) {
+
+    const p = PRODUCTS.find(x => x._id === id);
+
+    if (!p) return;
+
+    
+
+    const shopName = p.vendor ? p.vendor.shopName : 'Unknown Shop';
+
+    const shopAddr = p.vendor ? (p.vendor.address || 'Hassan') : 'Hassan';
+
+    const shopPhone = p.vendor ? (p.vendor.phone || '') : '';
+
+    const isApproved = p.vendor ? p.vendor.status === 'approved' : false;
+
+
+
+    document.getElementById('modal-img').textContent = p.emoji || '📦';
+
+    document.getElementById('modal-shop-row').innerHTML = `
+
+      <div class="modal-shop-avatar">🏪</div>
+
+      <div>
+
+        <div class="modal-shop-name">${shopName}</div>
+
+        <div class="modal-shop-loc">📍 ${shopAddr}</div>
+
+      </div>
+
+      ${isApproved ? '<div class="modal-verified">✓ Verified</div>' : ''}`;
+
+    document.getElementById('modal-name').textContent = p.name;
+
+    document.getElementById('modal-meta').innerHTML = `
+
+      <div class="modal-rating"><span class="stars">${starsHtml(p.averageRating || 0)}</span>&nbsp;${p.averageRating || 0}</div>
+
+      <div class="modal-review-count">${p.reviewCount || 0} reviews</div>
+
+      <div class="modal-cat-tag">${p.category}</div>`;
+
+    document.getElementById('modal-badges').innerHTML = 
+
+      `<span class="m-badge green">🏪 ${shopName}</span>` +
+
+      (p.stockStatus === 'out' ? '<span class="m-badge orange">❌ Out of Stock</span>' : '<span class="m-badge green">✅ In Stock</span>');
+
+    document.getElementById('modal-desc').textContent = p.description || 'No description available.';
+
+    document.getElementById('modal-details').innerHTML = `
+
+      <div class="detail-item"><div class="di-label">Category</div><div class="di-value">${p.category}</div></div>
+
+      <div class="detail-item"><div class="di-label">Unit</div><div class="di-value">${p.unit}</div></div>
+
+      <div class="detail-item"><div class="di-label">Shop</div><div class="di-value">${shopName}</div></div>
+
+      <div class="detail-item"><div class="di-label">Location</div><div class="di-value">${shopAddr}</div></div>
+
+      ${shopPhone ? `<div class="detail-item"><div class="di-label">Phone</div><div class="di-value">${shopPhone}</div></div>` : ''}
+
+      <div class="detail-item"><div class="di-label">Status</div><div class="di-value">${p.stockStatus === 'out' ? 'Out of Stock' : 'Available'}</div></div>`;
+
+    document.getElementById('modal-reviews').innerHTML = '<div style="color:var(--muted);font-size:0.88rem;">No reviews yet — be the first to try this product!</div>';
+
+    
+
+    const wa = shopPhone ? `https://wa.me/91${shopPhone.replace(/[^0-9]/g,'')}?text=Hi! I saw your "${p.name}" on VendorConnect. Is it available?` : '#';
+
+    document.getElementById('modal-price').innerHTML = `
+
+      <div>
+
+        <div class="mp-label">Price</div>
+
+        <div class="mp-price">₹${p.price}</div>
+
+        <div class="mp-unit">${p.unit}</div>
+
+      </div>
+
+      <div class="modal-cta-btns">
+
+        ${shopPhone ? `<a class="btn-whatsapp" href="${wa}" target="_blank">💬 WhatsApp</a>
+
+        <a class="btn-call" href="tel:+91${shopPhone.replace(/[^0-9]/g,'')}">📞 Call Shop</a>` : '<span style="color:var(--muted)">Contact info unavailable</span>'}
+
+      </div>`;
+
+    document.getElementById('modal-strip').innerHTML = `
+
+      <div class="shop-strip-dot"></div>
+
+      <div class="shop-strip-text"><strong>${shopName}</strong> is a verified vendor — contact them directly. No commission, no middlemen.</div>`;
+
+    document.getElementById('modal-overlay').classList.add('open');
+
+    document.body.style.overflow = 'hidden';
+
+  }
+
+
+
+  function closeModal() {
+
+    document.getElementById('modal-overlay').classList.remove('open');
+
+    document.body.style.overflow = '';
+
+  }
+
+
+
+  function closeModalOutside(e) {
+
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+
+  }
+
+
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+
+
+  // Fetch products from API on page load
+
+  async function loadProducts() {
+
+    const grid = document.getElementById('products-grid');
+
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">⏳ Loading products...</div>';
+
+    
+
+    try {
+
+      const response = await fetch('/api/v1/products');
+
+      const result = await response.json();
+
+
+
+      if (result.success && result.data.length > 0) {
+
+        PRODUCTS = result.data;
+
+        renderProducts(PRODUCTS);
+
+        document.querySelector('.hero-chip:first-child').textContent = `🛒 ${PRODUCTS.length} Products`;
+
+      } else {
+
+        grid.innerHTML = '';
+
+        document.getElementById('empty-state').style.display = 'block';
+
+        document.getElementById('results-count').textContent = '0 products';
+
+      }
+
+    } catch (error) {
+
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#c0392b;">❌ Failed to load products: ${error.message}</div>`;
+
+    }
+
+  }
+
+
+
+  loadProducts();
+
+</script>
+
+<script src="nav.js"></script>
+
+
+
+</body>
+
+</html>

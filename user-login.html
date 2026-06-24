@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login / Register — VendorConnect</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="translations.js"></script>
+  <script src="auth.js"></script>
+  <style>
+    .auth-page {
+      min-height: calc(100vh - 68px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background: linear-gradient(160deg, var(--forest-pale) 0%, var(--cream) 60%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-page::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(20,170,170,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .auth-page::after {
+      content: '';
+      position: absolute;
+      bottom: -100px; left: -100px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(232,147,10,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .auth-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 44px;
+      width: 100%;
+      max-width: 880px;
+      position: relative;
+      z-index: 1;
+      align-items: center;
+    }
+
+    /* Left side */
+    .auth-left h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 800;
+      color: var(--charcoal);
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+
+    .auth-left h2 span { color: var(--forest); }
+
+    .auth-left p {
+      color: var(--muted);
+      font-size: 0.97rem;
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+
+    .benefit-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .benefit-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      font-size: 0.87rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .benefit-item:hover {
+      border-color: var(--forest-light);
+      transform: translateX(4px);
+    }
+
+    .benefit-icon { font-size: 1.15rem; }
+
+    /* Right card */
+    .auth-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-strong);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      animation: fadeInUp 0.45s ease both;
+    }
+
+    /* Tab switcher */
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .auth-tab {
+      padding: 16px;
+      text-align: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      background: var(--cream);
+      color: var(--muted);
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .auth-tab.active {
+      background: white;
+      color: var(--forest);
+      border-bottom: 2px solid var(--forest);
+      margin-bottom: -2px;
+    }
+
+    .auth-tab:hover:not(.active) { color: var(--charcoal); background: white; }
+
+    /* Panels */
+    .auth-panel {
+      padding: 32px 36px 36px;
+    }
+
+    .panel-heading {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--charcoal);
+      margin-bottom: 5px;
+    }
+
+    .panel-sub {
+      color: var(--muted);
+      font-size: 0.83rem;
+      margin-bottom: 24px;
+      line-height: 1.55;
+    }
+
+    .demo-hint {
+      background: var(--forest-pale);
+      border: 1px solid var(--forest-light);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.78rem;
+      color: var(--forest);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .demo-hint strong { color: var(--forest); }
+
+    @media (max-width: 768px) {
+      .auth-wrapper { grid-template-columns: 1fr; }
+      .auth-left { display: none; }
+      .auth-panel { padding: 24px 22px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">🏪</div>
+    VendorConnect
+  </a>
+  <nav><!-- filled by nav.js --></nav>
+</header>
+
+<div class="page-wrap">
+  <div class="auth-page">
+    <div class="auth-wrapper">
+
+      <!-- Left -->
+      <div class="auth-left">
+        <h2>Discover Local<br><span>Hassan Shops</span></h2>
+        <p>Create a free account to browse verified local shops, save products to your wishlist, and connect directly with vendors near you.</p>
+
+        <div class="benefit-list">
+          <div class="benefit-item"><span class="benefit-icon">🏪</span> Browse all verified local shops</div>
+          <div class="benefit-item"><span class="benefit-icon">🛒</span> Explore fresh products & prices</div>
+          <div class="benefit-item"><span class="benefit-icon">❤️</span> Save products to your wishlist</div>
+          <div class="benefit-item"><span class="benefit-icon">💬</span> Contact vendors directly via WhatsApp</div>
+          <div class="benefit-item"><span class="benefit-icon">🆓</span> Completely free, always</div>
+        </div>
+      </div>
+
+      <!-- Right card -->
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Login</button>
+          <button class="auth-tab" id="tab-register" onclick="switchTab('register')">New Account</button>
+        </div>
+
+        <!-- LOGIN PANEL -->
+        <div class="auth-panel" id="panel-login">
+          <div class="panel-heading">Welcome back!</div>
+          <p class="panel-sub">Log in to access shops, products, and your wishlist.</p>
+
+          <div class="demo-hint">
+            <strong>Demo login:</strong> priya@gmail.com / priya123<br>
+            or arjun@gmail.com / arjun456
+          </div>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="login-email" placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="login-pass" placeholder="Enter your password">
+          </div>
+
+          <button class="btn-forest full" onclick="doLogin()" style="margin-top:6px;">
+            Login →
+          </button>
+
+          <div style="text-align:right; margin-top: 10px;">
+            <a href="#" onclick="showForgotUser(); return false;" style="font-size:0.82rem; color:var(--forest-mid); text-decoration:none; font-weight:600;">Forgot password?</a>
+          </div>
+
+          <div id="user-forgot-msg" style="display:none; margin-top:12px; background:var(--forest-pale); border:1px solid var(--forest-light); color:var(--forest); padding:14px 18px; border-radius:var(--radius); font-size:0.87rem; font-weight:500; line-height:1.6;">
+            📞 &nbsp; To reset your password, call or WhatsApp us at <strong>+91 9876543210</strong> or email <strong>support@vendorconnect.com</strong>. We'll help you within 24 hours.
+          </div>
+
+          <div class="error-toast" id="login-error"></div>
+        </div>
+
+        <!-- REGISTER PANEL -->
+        <div class="auth-panel" id="panel-register" style="display:none;">
+          <div class="panel-heading">Create your account</div>
+          <p class="panel-sub">Free to join. Browse shops and save your favourites.</p>
+
+          <div class="form-group">
+            <label>Your Name *</label>
+            <input type="text" id="reg-name" placeholder="e.g. Priya Sharma">
+          </div>
+          <div class="form-group">
+            <label>Email Address *</label>
+            <input type="email" id="reg-email" placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label>Password *</label>
+            <input type="password" id="reg-pass" placeholder="Min. 6 characters">
+          </div>
+          <div class="form-group">
+            <label>Confirm Password *</label>
+            <input type="password" id="reg-confirm" placeholder="Repeat your password">
+          </div>
+
+          <button class="btn-primary full" onclick="doRegister()" style="margin-top:6px;">
+            Create Account →
+          </button>
+
+          <div class="error-toast" id="reg-error"></div>
+          <div class="success-toast" id="reg-success">✅ &nbsp; Account created! Redirecting...</div>
+        </div>
+      </div><!-- /auth-card -->
+
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 <strong>VendorConnect</strong> — Empowering local businesses in Hassan, Karnataka</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="vendor-login.html">Vendor Login</a>
+      <a href="vendor-register.html">Register Shop</a>
+      <a href="admin-login.html">Admin</a>
+    </div>
+  </footer>
+</div>
+
+<script src="nav.js"></script>
+<script>
+  /* If already logged in, redirect appropriately */
+  (function(){
+    const role = vcGetRole();
+    if (role === 'user')   { window.location.href = 'shops.html';            return; }
+    if (role === 'vendor') { window.location.href = 'vendor-dashboard.html'; return; }
+    if (role === 'admin')  { window.location.href = 'index.html';            return; }
+  })();
+
+  function showForgotUser() {
+    const msg = document.getElementById('user-forgot-msg');
+    msg.style.display = msg.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function switchTab(tab) {    document.getElementById('panel-login').style.display    = tab === 'login'    ? 'block' : 'none';
+    document.getElementById('panel-register').style.display = tab === 'register' ? 'block' : 'none';
+    document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  }
+
+  async function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-pass').value;
+    const errEl = document.getElementById('login-error');
+    const btn   = document.querySelector('#panel-login .btn-forest');
+    errEl.classList.remove('show');
+
+    if (!email || !pass) {
+      errEl.textContent = '⚠️  Please enter your email and password.';
+      errEl.classList.add('show'); return;
+    }
+
+    btn.innerHTML = '⏳ Loading...';
+    btn.disabled = true;
+
+    const result = await vcLoginUser(email, pass);
+    if (result.ok) {
+      window.location.href = 'shops.html';
+    } else {
+      btn.innerHTML = 'Login →';
+      btn.disabled = false;
+      errEl.textContent = result.msg;
+      errEl.classList.add('show');
+    }
+  }
+
+  async function doRegister() {
+    const name    = document.getElementById('reg-name').value.trim();
+    const email   = document.getElementById('reg-email').value.trim();
+    const pass    = document.getElementById('reg-pass').value;
+    const confirm = document.getElementById('reg-confirm').value;
+    const errEl   = document.getElementById('reg-error');
+    const sucEl   = document.getElementById('reg-success');
+    const btn     = document.querySelector('#panel-register .btn-primary');
+    errEl.classList.remove('show');
+    sucEl.classList.remove('show');
+
+    if (!name || !email || !pass || !confirm) {
+      errEl.textContent = '⚠️  Please fill in all fields.';
+      errEl.classList.add('show'); return;
+    }
+    if (pass.length < 6) {
+      errEl.textContent = '⚠️  Password must be at least 6 characters.';
+      errEl.classList.add('show'); return;
+    }
+    if (pass !== confirm) {
+      errEl.textContent = '⚠️  Passwords do not match.';
+      errEl.classList.add('show'); return;
+    }
+
+    btn.innerHTML = '⏳ Creating Account...';
+    btn.disabled = true;
+
+    const result = await vcRegisterUser(name, email, pass);
+    if (result.ok) {
+      sucEl.classList.add('show');
+      setTimeout(() => { window.location.href = 'shops.html'; }, 1200);
+    } else {
+      btn.innerHTML = 'Create Account →';
+      btn.disabled = false;
+      errEl.textContent = result.msg;
+      errEl.classList.add('show');
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const activePanel = document.getElementById('panel-login').style.display !== 'none' ? 'login' : 'register';
+      if (activePanel === 'login') doLogin();
+      else doRegister();
+    }
+  });
+</script>
+</body>
+</html>

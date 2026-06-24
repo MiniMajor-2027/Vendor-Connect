@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shops — VendorConnect</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="shops.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="auth.js"></script>
+  <script src="translations.js"></script>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">🏪</div>
+    VendorConnect
+  </a>
+  <nav><!-- nav.js --></nav>
+</header>
+
+<div class="page-wrap">
+  <section class="shops-hero">
+    <h2>Browse Local Shops</h2>
+    <p>Find nearby verified vendors, explore their products, and connect directly. Support your local Hassan businesses.</p>
+  </section>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span>🔍</span>
+      <input type="text" id="shop-search" placeholder="Search shop name or type..." oninput="renderShops()" style="width: 200px;">
+    </div>
+    
+    <div class="filter-group">
+      <span>📍</span>
+      <select id="area-filter" onchange="renderShops()">
+        <option value="All">All Areas in Hassan</option>
+        <option value="Hassan Market">Hassan Market</option>
+        <option value="Temple Street">Temple Street</option>
+        <option value="Milk Circle">Milk Circle</option>
+        <option value="KEB Circle">KEB Circle</option>
+        <option value="Bus Stand Road">Bus Stand Road</option>
+        <option value="Main Circle">Main Circle</option>
+      </select>
+    </div>
+
+    <button class="btn-location" id="btn-location" onclick="requestLocation()">
+      📍 Use My Location
+    </button>
+
+    <div class="filter-group" id="distance-filter" style="display: none;">
+      <span>📏</span>
+      <select id="radius-filter" onchange="renderShops()">
+        <option value="500">Nearest (Within 500m)</option>
+        <option value="1000">Within 1 km</option>
+        <option value="5000" selected>Within 5 km</option>
+        <option value="10000">Within 10 km</option>
+      </select>
+    </div>
+  </div>
+
+  <div style="padding: 24px 7% 0;">
+    <div id="map" style="height: 400px; width: 100%; border-radius: 16px; z-index: 1; border: 1px solid var(--border); box-shadow: var(--shadow-soft);"></div>
+  </div>
+
+  <div class="shops-grid" id="shops-grid"></div>
+
+  <footer>
+    <p data-i18n="footer.copy">© 2026 <strong>VendorConnect</strong> — Empowering local businesses in Hassan, Karnataka</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="products.html" data-i18n="footer.products">Products</a>
+      <a href="wishlist.html" data-i18n="nav.wishlist">Wishlist</a>
+      <a href="vendor-login.html">Vendor Login</a>
+      <a href="vendor-register.html" data-i18n="nav.register">Register Shop</a>
+      <a href="admin-login.html">Admin</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  let SHOPS = [];
+
+  async function fetchShops() {
+    try {
+      const response = await fetch('/api/v1/shops');
+      const result = await response.json();
+      if (result.success) {
+        SHOPS = result.data.map(shop => ({
+          id: shop._id,
+          name: shop.shopName,
+          type: shop.category,
+          area: shop.address.split(',')[0] || 'Hassan',
+          address: shop.address,
+          phone: shop.phone,
+          image: shop.image || 'https://images.unsplash.com/photo-1534723452862-4c874018d66d?auto=format&fit=crop&w=600&h=400&q=80',
+          rating: shop.averageRating || 0,
+          reviews: shop.reviewCount || 0,
+          lat: shop.location.coordinates[1],
+          lng: shop.location.coordinates[0],
+          tags: shop.tags.length > 0 ? shop.tags : [shop.category],
+          desc: shop.description
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch shops:', error);
+    }
+  }
+
+  let userLat = null;
+  let userLng = null;
+  let map;
+  let userMarker;
+  let shopMarkers = [];
+
+  async function initMap() {
+    await fetchShops(); // Get real data first
+    
+    map = L.map('map').setView([13.0068, 76.1004], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    SHOPS.forEach(shop => {
+      const marker = L.marker([shop.lat, shop.lng]).addTo(map);
+      marker.bindPopup(`
+        <div style="text-align:center;">
+          <strong>${shop.name}</strong><br>
+          <span style="color:#666;font-size:0.8rem;">${shop.type}</span><br>
+          <a href="shop.html?id=${shop.id}" style="display:inline-block;margin-top:5px;color:#F47B20;text-decoration:none;font-weight:bold;">View Shop</a>
+        </div>
+      `);
+      shopMarkers.push({ id: shop.id, marker: marker });
+    });
+
+    renderShops(); // Render list too
+  }
+
+  document.addEventListener('DOMContentLoaded', initMap);
+
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // metres
+    const φ1 = lat1 * Math.PI/180;
+    const φ2 = lat2 * Math.PI/180;
+    const Δφ = (lat2-lat1) * Math.PI/180;
+    const Δλ = (lon2-lon1) * Math.PI/180;
+
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c; // in metres
+  }
+
+  function formatDistance(meters) {
+    if (meters < 1000) return Math.round(meters) + ' m away';
+    return (meters / 1000).toFixed(1) + ' km away';
+  }
+
+  function updateUserMarkerOnMap(lat, lng, popupText) {
+    if (!map) return;
+    if (userMarker) map.removeLayer(userMarker);
+    
+    const redIcon = L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+    
+    userMarker = L.marker([lat, lng], {icon: redIcon}).addTo(map);
+    userMarker.bindPopup(`<b>📍 ${popupText}</b>`).openPopup();
+    
+    // Create a bounds object that includes the user and all visible shops
+    const bounds = L.latLngBounds([[lat, lng]]);
+    shopMarkers.forEach(sm => {
+      if (map.hasLayer(sm.marker)) {
+        bounds.extend(sm.marker.getLatLng());
+      }
+    });
+    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+  }
+
+  function requestLocation() {
+    const btn = document.getElementById('btn-location');
+    if (navigator.geolocation) {
+      btn.innerHTML = '⏳ Locating...';
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          userLat = position.coords.latitude;
+          userLng = position.coords.longitude;
+          btn.innerHTML = '📍 Location Active';
+          btn.classList.add('active');
+          document.getElementById('distance-filter').style.display = 'flex';
+          renderShops();
+          updateUserMarkerOnMap(userLat, userLng, 'You are here!');
+        },
+        (error) => {
+          alert("Unable to retrieve your location. We will use a default Hassan location for demo.");
+          userLat = 13.0060;
+          userLng = 76.1000;
+          btn.innerHTML = '📍 Mock Location Active';
+          btn.classList.add('active');
+          document.getElementById('distance-filter').style.display = 'flex';
+          renderShops();
+          updateUserMarkerOnMap(userLat, userLng, 'Mock Location (Hassan)');
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  }
+
+  function shopCard(shop, distanceStr) {
+    const tagsHtml = shop.tags.map(t => `<span class="sc-tag">${t}</span>`).join('');
+    return `
+      <a href="shop.html?id=${shop.id}" class="shop-card">
+        <img src="${shop.image}" alt="${shop.name}" class="sc-img" loading="lazy">
+        <div class="sc-body">
+          <div class="sc-tags">${tagsHtml}</div>
+          <h3 class="sc-title">${shop.name}</h3>
+          <div class="sc-meta">
+            <span>📍 ${shop.area}</span>
+            <div class="sc-rating">★ <span>${shop.rating} (${shop.reviews})</span></div>
+          </div>
+          <p class="sc-desc">${shop.desc}</p>
+          <div class="sc-footer">
+            ${distanceStr ? `<div class="sc-distance">🚶 ${distanceStr}</div>` : `<div></div>`}
+            <div class="sc-btn">View Shop →</div>
+          </div>
+        </div>
+      </a>
+    `;
+  }
+
+  function renderShops() {
+    const query = document.getElementById('shop-search').value.toLowerCase().trim();
+    const area = document.getElementById('area-filter').value;
+    const radiusStr = document.getElementById('radius-filter').value;
+    const maxDistance = parseInt(radiusStr, 10);
+
+    const filtered = SHOPS.map(shop => {
+      let distance = null;
+      let distanceStr = null;
+      if (userLat !== null && userLng !== null) {
+        distance = calculateDistance(userLat, userLng, shop.lat, shop.lng);
+        distanceStr = formatDistance(distance);
+      }
+      return { ...shop, distance, distanceStr };
+    }).filter((shop) => {
+      // Search filter
+      if (query && !shop.name.toLowerCase().includes(query) && !shop.type.toLowerCase().includes(query)) {
+        return false;
+      }
+      // Area filter
+      if (area !== 'All' && shop.area !== area) {
+        return false;
+      }
+      // Distance filter
+      if (userLat !== null && shop.distance !== null && shop.distance > maxDistance) {
+        return false;
+      }
+      return true;
+    });
+
+    // Sort by distance if location is active
+    if (userLat !== null) {
+      filtered.sort((a, b) => a.distance - b.distance);
+    }
+
+    // Update map markers visibility based on filters
+    if (typeof shopMarkers !== 'undefined' && map) {
+      shopMarkers.forEach(sm => {
+        const isVisible = filtered.some(f => f.id === sm.id);
+        if (isVisible) {
+          if (!map.hasLayer(sm.marker)) map.addLayer(sm.marker);
+        } else {
+          if (map.hasLayer(sm.marker)) map.removeLayer(sm.marker);
+        }
+      });
+    }
+
+    const grid = document.getElementById('shops-grid');
+
+    if (!filtered.length) {
+      grid.innerHTML = `
+        <div id="shops-empty">
+          <h3>No shops found</h3>
+          <p>Try adjusting your search, area, or distance filters.</p>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(shop => shopCard(shop, shop.distanceStr)).join('');
+  }
+
+  renderShops();
+</script>
+
+<script src="nav.js"></script>
+<script>
+  // Shops is public! No login required to browse.
+  // But we still check if we want to show personalized info.
+  const currentRole = vcGetRole();
+  console.log('Current viewer role:', currentRole || 'Guest');
+</script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — VendorConnect</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── ADMIN LOGIN PAGE ── */
+    .admin-page {
+      min-height: calc(100vh - 68px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background: linear-gradient(160deg, #f0f4ff 0%, var(--cream) 60%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .admin-page::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(26,71,49,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .admin-page::after {
+      content: '';
+      position: absolute;
+      bottom: -100px; left: -100px;
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(255,107,44,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .admin-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 40px;
+      width: 100%;
+      max-width: 860px;
+      position: relative;
+      z-index: 1;
+      align-items: center;
+    }
+
+    /* Left info side */
+    .admin-info h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--charcoal);
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+
+    .admin-info h2 span { color: var(--forest); }
+
+    .admin-info p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+
+    .admin-features {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .admin-feat {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      font-size: 0.87rem;
+      font-weight: 500;
+    }
+
+    .admin-feat .feat-icon {
+      font-size: 1.1rem;
+    }
+
+    /* Right card */
+    .admin-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 44px;
+      box-shadow: var(--shadow-strong);
+      border: 1px solid var(--border);
+      animation: fadeInUp 0.5s ease both;
+    }
+
+    .admin-card-icon {
+      width: 58px; height: 58px;
+      background: linear-gradient(135deg, var(--forest), var(--forest-mid));
+      border-radius: 17px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 22px;
+    }
+
+    .admin-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.55rem;
+      color: var(--charcoal);
+      margin-bottom: 5px;
+    }
+
+    .admin-card .form-sub-text {
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .restricted-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff3cd;
+      color: #856404;
+      padding: 6px 13px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 22px;
+      border: 1px solid #ffc107;
+    }
+
+    @media (max-width: 768px) {
+      .admin-wrapper { grid-template-columns: 1fr; }
+      .admin-info { display: none; }
+      .admin-card { padding: 32px 24px; }
+    }
+  </style>
+  <script src="auth.js"></script>
+  <script src="translations.js"></script>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">🏪</div>
+    VendorConnect
+  </a>
+  <nav><!-- nav.js --></nav>
+</header>
+
+<div class="page-wrap">
+  <div class="admin-page">
+    <div class="admin-wrapper">
+
+      <!-- Left info -->
+      <div class="admin-info">
+        <h2>Admin <span>Control Panel</span></h2>
+        <p>Manage vendors, approve new shop registrations, view platform activity, and keep VendorConnect running smoothly for all businesses in Hassan.</p>
+
+        <div class="admin-features">
+          <div class="admin-feat">
+            <span class="feat-icon">✅</span>
+            Approve or reject new vendor registrations
+          </div>
+          <div class="admin-feat">
+            <span class="feat-icon">🏪</span>
+            View and manage all registered shops
+          </div>
+          <div class="admin-feat">
+            <span class="feat-icon">📊</span>
+            See platform stats and activity reports
+          </div>
+          <div class="admin-feat">
+            <span class="feat-icon">💬</span>
+            Read and respond to vendor/customer messages
+          </div>
+          <div class="admin-feat">
+            <span class="feat-icon">🔧</span>
+            Update and maintain platform settings
+          </div>
+        </div>
+      </div>
+
+      <!-- Right login card -->
+      <div class="admin-card">
+        <a href="index.html" class="back-link">← Back to Home</a>
+        <div class="admin-card-icon">🔐</div>
+        <div class="restricted-badge" data-i18n="admin.badge">🔒 Restricted Access</div>
+        <h3>Admin Login</h3>
+        <p class="form-sub-text">Authorised personnel only. Your activity is logged.</p>
+
+        <div class="form-group">
+          <label>Admin Email</label>
+          <input type="email" id="admin-email" placeholder="admin@vendorconnect.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="admin-password" placeholder="Enter admin password">
+        </div>
+
+        <button class="btn-forest full" onclick="adminLogin()" style="margin-top: 6px;">
+          Login to Dashboard →
+        </button>
+
+        <div class="error-toast" id="admin-error"></div>
+        <div class="success-toast" id="admin-success">
+          ✅ &nbsp; Login successful! Redirecting to admin dashboard...
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <p data-i18n="footer.copy">© 2026 <strong>VendorConnect</strong> — Empowering local businesses in Hassan, Karnataka</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="products.html">Products</a>
+      <a href="shops.html">Shops</a>
+      <a href="wishlist.html" data-i18n="nav.wishlist">Wishlist</a>
+      <a href="vendor-login.html">Vendor Login</a>
+      <a href="vendor-register.html" data-i18n="nav.register">Register Shop</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  (function(){
+    const r = vcGetRole();
+    if (r === 'admin') { window.location.href = 'admin-dashboard.html'; return; }
+  })();
+
+  async function adminLogin() {
+    const email    = document.getElementById('admin-email').value.trim();
+    const password = document.getElementById('admin-password').value;
+    const errEl    = document.getElementById('admin-error');
+    const sucEl    = document.getElementById('admin-success');
+    const btn      = document.querySelector('.btn-forest');
+    
+    errEl.classList.remove('show');
+    sucEl.classList.remove('show');
+
+    if (!email || !password) {
+      errEl.textContent = '⚠️  Please enter your email and password.';
+      errEl.classList.add('show'); return;
+    }
+
+    btn.innerHTML = '⏳ Loading...';
+    btn.disabled = true;
+
+    const result = await vcLoginAdmin(email, password);
+    if (result.ok) {
+      sucEl.classList.add('show');
+      setTimeout(() => { window.location.href = 'admin-dashboard.html'; }, 800);
+    } else {
+      btn.innerHTML = 'Login to Dashboard →';
+      btn.disabled = false;
+      errEl.textContent = result.msg;
+      errEl.classList.add('show');
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') adminLogin();
+  });
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

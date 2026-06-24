@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Details — VendorConnect</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="shop.css">
+  <script src="auth.js"></script>
+  <script src="translations.js"></script>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">🏪</div>
+    VendorConnect
+  </a>
+  <nav><!-- nav.js --></nav>
+</header>
+
+<div class="page-wrap" id="shop-content">
+  <!-- Content will be injected here -->
+</div>
+
+<footer>
+  <p data-i18n="footer.copy">© 2026 <strong>VendorConnect</strong> — Empowering local businesses in Hassan, Karnataka</p>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="products.html" data-i18n="footer.products">Products</a>
+    <a href="wishlist.html" data-i18n="nav.wishlist">Wishlist</a>
+    <a href="vendor-login.html">Vendor Login</a>
+    <a href="vendor-register.html" data-i18n="nav.register">Register Shop</a>
+    <a href="admin-login.html">Admin</a>
+  </div>
+</footer>
+
+<script>
+  async function loadShop() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shopId = urlParams.get('id');
+    const container = document.getElementById('shop-content');
+
+    if (!shopId) {
+      container.innerHTML = '<div class="error-state"><h2>Select a shop to view</h2><a href="shops.html" class="btn-primary">Back to Shops</a></div>';
+      return;
+    }
+
+    try {
+      const shopRes = await fetch(`/api/v1/shops/${shopId}`);
+      const result = await shopRes.json();
+
+      if (!result.success || !result.data) {
+        container.innerHTML = `<div class="error-state"><h2>Shop not found</h2><a href="shops.html" class="btn-primary">Back to Shops</a></div>`;
+        return;
+      }
+
+      // Fetch products for this shop
+      const prodRes = await fetch(`/api/v1/shops/${shopId}/products`);
+      const prodResult = await prodRes.json();
+      const products = prodResult.success ? prodResult.data : [];
+
+      const shop = result.data;
+      const displayData = {
+        name: shop.shopName,
+        type: shop.category,
+        area: shop.address.split(',')[0] || 'Hassan',
+        address: shop.address,
+        phone: shop.phone,
+        image: shop.image || 'https://images.unsplash.com/photo-1534723452862-4c874018d66d?auto=format&fit=crop&w=1200&h=400&q=80',
+        rating: shop.averageRating || 0,
+        reviews: shop.reviewCount || 0,
+        desc: shop.description || 'Welcome to our shop!',
+        openTime: `${shop.openingTime || '09:00'} - ${shop.closingTime || '21:00'}`
+      };
+
+      const productsHtml = products.length > 0 ? `
+        <div style="margin-top: 32px;">
+          <h3>Products Available</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; margin-top: 16px;">
+            ${products.map(p => `
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 8px;">${p.emoji || '📦'}</div>
+                <div style="font-weight: 600; font-size: 0.9rem;">${p.name}</div>
+                <div style="color: var(--forest); font-weight: 700; margin-top: 4px;">₹${p.price}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : '<div style="margin-top: 32px; color: #6b7280;"><i>No products listed yet.</i></div>';
+
+      container.innerHTML = `
+        <div class="shop-header">
+          <img src="${displayData.image}" alt="${displayData.name}" class="shop-cover">
+          <div class="shop-header-content">
+            <h1 class="shop-title">${displayData.name}</h1>
+            <div class="shop-meta">
+              <div>📍 ${displayData.area}</div>
+              <div>⭐ ${displayData.rating} (${displayData.reviews} reviews)</div>
+              <div>🏷️ ${displayData.type}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="shop-layout">
+          <div class="shop-main">
+            <h3>About the Shop</h3>
+            <p class="shop-desc">${displayData.desc}</p>
+            ${productsHtml}
+          </div>
+
+          <div class="shop-sidebar">
+            <div class="info-card">
+              <div class="info-row">
+                <div class="info-icon">📍</div>
+                <div class="info-text">
+                  <h4>Address</h4>
+                  <p>${displayData.address}</p>
+                </div>
+              </div>
+              <div class="info-row">
+                <div class="info-icon">🕒</div>
+                <div class="info-text">
+                  <h4>Opening Hours</h4>
+                  <p>${displayData.openTime}</p>
+                </div>
+              </div>
+              <div class="info-row">
+                <div class="info-icon">📞</div>
+                <div class="info-text">
+                  <h4>Phone Number</h4>
+                  <p>${displayData.phone}</p>
+                </div>
+              </div>
+
+              <div style="margin-top: 24px;">
+                <a href="https://wa.me/${displayData.phone.replace(/[^0-9]/g, '')}?text=Hi!" target="_blank" class="btn-contact btn-whatsapp">
+                  💬 Message on WhatsApp
+                </a>
+                <a href="tel:${displayData.phone.replace(/[^0-9+]/g, '')}" class="btn-contact btn-call">
+                  📞 Call Shop
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    } catch (error) {
+      container.innerHTML = `<div class="error-state"><h2>Error loading shop</h2><p>${error.message}</p></div>`;
+    }
+  }
+
+  loadShop();
+</script>
+
+<script src="nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — VendorConnect</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Include necessary scripts for navbar functionality -->
+  <script src="auth.js"></script>
+  <script src="translations.js"></script>
+  <style>
+    /* ── CONTACT PAGE SPECIFIC STYLING ── */
+    .contact-hero {
+      background: #ff9a5c; 
+      padding: 80px 7%;
+      text-align: center;
+    }
+
+    .contact-hero h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.3rem, 4.5vw, 3.7rem);
+      font-weight: 800;
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    .contact-hero p {
+      color: white;
+      font-size: 1.02rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.75;
+    }
+
+    .contact-body {
+      background-color: var(--cream);
+      padding: 60px 7%;
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 40px;
+    }
+
+    .info-card {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border);
+    }
+
+    .info-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      font-weight: 700;
+      color: var(--charcoal);
+      font-size: 1.1rem;
+    }
+
+    .msg-form {
+      background: white;
+      border-radius: 24px;
+      padding: 50px;
+      box-shadow: var(--shadow-med);
+      border: 1px solid var(--border);
+    }
+
+    .msg-form h3 { 
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem; 
+      margin-bottom: 10px; 
+      color: var(--charcoal); 
+    }
+
+    .btn-submit {
+      background: var(--charcoal);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      width: 100%;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-submit:hover { opacity: 0.9; }
+
+    @media (max-width: 900px) {
+      .contact-body { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">🏪</div>
+    VendorConnect
+  </a>
+  <nav><!-- nav.js will inject links here based on role --></nav>
+</header>
+
+<div class="page-wrap">
+  <div class="contact-hero">
+    <h2 data-i18n="contact.title">Get in Touch</h2>
+    <p data-i18n="contact.subtitle">Have questions or need help? Our team is happy to assist you — even in Kannada!</p>
+  </div>
+
+  <div class="contact-body">
+    <div class="contact-info">
+      <div class="info-card">
+        <div class="info-label">Email Us</div>
+        <div class="info-value">support@vendorconnect.com</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">Call or WhatsApp</div>
+        <div class="info-value">+91 9876543210</div>
+      </div>
+    </div>
+
+    <div class="msg-form">
+      <h3>Send Us a Message</h3>
+      <p style="color: var(--muted); margin-bottom: 30px; font-size: 0.9rem;">We'll reply within 24 hours. You can also write in Kannada!</p>
+
+      <div class="form-group">
+        <label>Your Name *</label>
+        <input type="text" id="msg-name" placeholder="e.g. Raju Gowda" required>
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="msg-phone" placeholder="+91 XXXXX XXXXX">
+      </div>
+
+      <div class="form-group">
+        <label>Email Address (optional)</label>
+        <input type="email" id="msg-email" placeholder="your@email.com">
+      </div>
+
+      <div class="form-group">
+        <label>What is this about? *</label>
+        <select id="msg-subject" required>
+          <option value="">Select a topic...</option>
+          <option>Help with Registration</option>
+          <option>Problem with my Shop Listing</option>
+          <option>I Forgot my Password</option>
+          <option>Question about Features</option>
+          <option>Report a Problem</option>
+          <option>Suggestion or Feedback</option>
+          <option>I Want to Know More</option>
+          <option>Something Else</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Your Message *</label>
+        <textarea id="msg-body" rows="5" placeholder="Write your message here..." required></textarea>
+      </div>
+
+      <button id="submit-btn" class="btn-submit" onclick="sendMessage()">
+        Send Message →
+      </button>
+
+      <div class="error-toast" id="msg-error"></div>
+      <div class="success-toast" id="msg-success">
+        ✅ Your message was sent successfully!
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p data-i18n="footer.copy">© 2026 <strong>VendorConnect</strong> — Empowering local businesses in Hassan, Karnataka</p>
+  <div class="footer-links">
+    <!-- Links are patched by nav.js based on role -->
+  </div>
+</footer>
+
+<script>
+  async function sendMessage() {
+    const name = document.getElementById('msg-name').value.trim();
+    const phone = document.getElementById('msg-phone').value.trim();
+    const email = document.getElementById('msg-email').value.trim();
+    const topic = document.getElementById('msg-subject').value;
+    const message = document.getElementById('msg-body').value.trim();
+    
+    const errEl = document.getElementById('msg-error');
+    const sucEl = document.getElementById('msg-success');
+    const btn = document.getElementById('submit-btn');
+
+    errEl.classList.remove('show');
+    sucEl.classList.remove('show');
+
+    if (!name || !topic || !message) {
+      errEl.textContent = '⚠️ Please fill in all required fields (*).';
+      errEl.classList.add('show');
+      return;
+    }
+
+    try {
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      const response = await fetch('/api/v1/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, email, topic, message })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        sucEl.classList.add('show');
+        document.querySelectorAll('input, select, textarea').forEach(el => el.value = '');
+      } else {
+        throw new Error(data.message || 'Server error');
+      }
+    } catch (error) {
+      errEl.textContent = '❌ ' + error.message;
+      errEl.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send Message →';
+    }
+  }
+</script>
+
+<script src="nav.js"></script>
+</body>
+</html>

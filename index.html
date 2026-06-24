@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VendorConnect — Grow Local, Connect Global</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── HOME-SPECIFIC STYLES ── */
+    .hero {
+      min-height: calc(100vh - 68px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 60px 7% 50px;
+      gap: 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -10%;
+      right: -5%;
+      width: 560px;
+      height: 560px;
+      background: radial-gradient(circle, var(--forest-pale) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-text {
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 0.6s ease both;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--forest-pale);
+      color: var(--forest-mid);
+      padding: 7px 16px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 22px;
+      border: 1px solid rgba(82, 183, 136, 0.3);
+    }
+
+    .hero-badge .dot {
+      width: 7px;
+      height: 7px;
+      background: var(--forest-light);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.3rem, 4.5vw, 3.7rem);
+      font-weight: 800;
+      line-height: 1.08;
+      color: var(--charcoal);
+      margin-bottom: 18px;
+    }
+
+    .hero h1 span {
+      color: var(--saffron);
+    }
+
+    .hero-sub {
+      font-size: 1.02rem;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 34px;
+      max-width: 460px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--forest);
+    }
+
+    .stat-label {
+      font-size: 0.79rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Hero Visual */
+    .hero-visual {
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 0.7s 0.15s ease both;
+    }
+
+    .visual-card {
+      background: white;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow-strong);
+      border: 1px solid var(--border);
+    }
+
+    .vc-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .vc-avatar {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--saffron), var(--saffron-light));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .vc-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .vc-tag {
+      font-size: 0.77rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .vc-verified {
+      margin-left: auto;
+      background: var(--forest-pale);
+      color: var(--forest-mid);
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .vc-items {
+      display: grid;
+      gap: 10px;
+    }
+
+    .vc-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 15px;
+      background: var(--cream);
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .vc-item:hover {
+      background: var(--saffron-pale);
+      border-color: var(--saffron-light);
+    }
+
+    .vc-item-icon {
+      width: 36px;
+      height: 36px;
+      background: white;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: var(--shadow-soft);
+      flex-shrink: 0;
+    }
+
+    .vc-item-name {
+      font-size: 0.87rem;
+      font-weight: 500;
+    }
+
+    .vc-item-sub {
+      font-size: 0.74rem;
+      color: var(--muted);
+    }
+
+    .vc-item-price {
+      margin-left: auto;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--forest);
+    }
+
+    .ft {
+      position: absolute;
+      background: white;
+      border-radius: 13px;
+      padding: 11px 15px;
+      box-shadow: var(--shadow-med);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .ft-top {
+      top: -18px;
+      right: -16px;
+      animation: float 3.5s ease-in-out infinite;
+    }
+
+    .ft-bottom {
+      bottom: -16px;
+      left: -16px;
+      animation: float 4s 0.8s ease-in-out infinite;
+    }
+
+    /* How It Works */
+    .how-section {
+      background: white;
+      padding: 80px 7%;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+    }
+
+    .step-card {
+      padding: 30px 26px;
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--border);
+      background: var(--cream);
+      transition: all 0.3s;
+    }
+
+    .step-card:hover {
+      border-color: var(--saffron-light);
+      background: var(--saffron-pale);
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-med);
+    }
+
+    .step-num {
+      width: 46px;
+      height: 46px;
+      background: var(--saffron);
+      color: white;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 17px;
+    }
+
+    .step-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 9px;
+    }
+
+    .step-card p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* CTA Banner */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 100%);
+      margin: 0 5% 60px;
+      border-radius: var(--radius-lg);
+      padding: 56px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+
+    .cta-banner h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 800;
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    .cta-banner p {
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 0.95rem;
+    }
+
+    .cta-banner .btn-primary {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        min-height: auto;
+        padding: 50px 5% 40px;
+      }
+
+      .hero-visual {
+        display: none;
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 28px;
+      }
+    }
+  </style>
+  <script src="auth.js"></script>
+  <script src="translations.js"></script>
+</head>
+
+<body>
+
+  <header>
+    <a class="logo" href="index.html">
+      <div class="logo-icon">🏪</div>
+      VendorConnect
+    </a>
+    <nav><!-- nav.js --></nav>
+  </header>
+
+  <div class="page-wrap">
+
+    <!-- ── HERO ── -->
+    <section class="hero">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <div class="dot"></div>
+          Now serving Hassan, Karnataka
+        </div>
+        <h1 data-i18n="home.h1a">Grow Your Local<br><span data-i18n="home.h1b">Business Online</span></h1>
+        <p class="hero-sub"><span data-i18n="home.sub">VendorConnect helps local vendors go digital, increase
+            visibility, and connect with nearby customers — simply and completely free.</span></p>
+        <div class="hero-actions">
+          <a href="vendor-login.html" class="btn-primary" data-i18n="home.btn_login">Vendor Login →</a>
+          <a href="vendor-register.html" class="btn-outline" data-i18n="home.btn_reg">Register New Shop</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">100%</div>
+            <div class="stat-label" data-i18n="home.stat1_lbl">Free to Join</div>
+          </div>
+          <div>
+            <div class="stat-num">5 min</div>
+            <div class="stat-label" data-i18n="home.stat2_lbl">Setup Time</div>
+          </div>
+          <div>
+            <div class="stat-num">0</div>
+            <div class="stat-label" data-i18n="home.stat3_lbl">Tech Skills Needed</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div style="position: relative;">
+          <div class="visual-card">
+            <div class="vc-header">
+              <div class="vc-avatar">🛒</div>
+              <div>
+                <div class="vc-name">Raju's Kirana Store</div>
+                <div class="vc-tag">📍 Hassan Market</div>
+              </div>
+              <div class="vc-verified">✓ Verified</div>
+            </div>
+            <div class="vc-items">
+              <div class="vc-item">
+                <div class="vc-item-icon">🍅</div>
+                <div>
+                  <div class="vc-item-name">Fresh Tomatoes</div>
+                  <div class="vc-item-sub">Farm-fresh, daily stock</div>
+                </div>
+                <div class="vc-item-price">₹40/kg</div>
+              </div>
+              <div class="vc-item">
+                <div class="vc-item-icon">🧄</div>
+                <div>
+                  <div class="vc-item-name">Garlic Bunches</div>
+                  <div class="vc-item-sub">Local variety</div>
+                </div>
+                <div class="vc-item-price">₹80/kg</div>
+              </div>
+              <div class="vc-item">
+                <div class="vc-item-icon">🌾</div>
+                <div>
+                  <div class="vc-item-name">Sona Masuri Rice</div>
+                  <div class="vc-item-sub">Premium grade</div>
+                </div>
+                <div class="vc-item-price">₹65/kg</div>
+              </div>
+            </div>
+          </div>
+          <div class="ft ft-top">🔔 <span>3 new customers nearby!</span></div>
+          <div class="ft ft-bottom">⭐ <span>4.8 rating · 52 reviews</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ── -->
+    <section class="how-section">
+      <div class="section-label" data-i18n="home.how_label">How It Works</div>
+      <div class="section-title" data-i18n="home.how_title">Get Started in 3 Easy Steps</div>
+      <p class="section-sub">No technical skills needed. If you can use a phone, you can use VendorConnect.</p>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3 data-i18n="home.step1_title">Register Your Shop</h3>
+          <p>Fill in your shop name, create a username and password. Takes less than 5 minutes and it's completely free.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3 data-i18n="home.step2_title">Login & Add Products</h3>
+          <p>Log in with your username and password. Add what you sell with photos and prices. Update anytime from your
+            phone.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3 data-i18n="home.step3_title">Get Found by Customers</h3>
+          <p>Customers nearby find your shop, see your products, and contact you directly. Grow your business!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA BANNER ── -->
+    <div style="padding: 60px 0 0;">
+      <div class="cta-banner">
+        <div>
+          <h2 data-i18n="home.cta_title">Ready to Take Your Shop Online?</h2>
+          <p>Join hundreds of local vendors in Hassan who are growing their business with VendorConnect.</p>
+        </div>
+        <a href="vendor-register.html" class="btn-primary" data-i18n="home.cta_btn">Register Your Shop Free →</a>
+      </div>
+    </div>
+
+    <footer>
+      <p data-i18n="footer.copy">© 2026 <strong>VendorConnect</strong> — Empowering local businesses in Hassan,
+        Karnataka</p>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="products.html">Products</a>
+        <a href="shops.html">Shops</a>
+        <a href="wishlist.html" data-i18n="nav.wishlist">Wishlist</a>
+        <a href="vendor-login.html">Vendor Login</a>
+        <a href="vendor-register.html" data-i18n="nav.register">Register Shop</a>
+        <a href="admin-login.html">Admin</a>
+      </div>
+    </footer>
+
+  </div>
+<script src="nav.js"></script>
+</body>
+
+</html>

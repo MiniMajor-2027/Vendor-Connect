@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Your Shop — VendorConnect</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── REGISTER PAGE ── */
+    .reg-layout {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      min-height: calc(100vh - 68px);
+    }
+
+    /* Left guide panel */
+    .guide-panel {
+      background: var(--forest);
+      padding: 56px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .guide-panel::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 250px; height: 250px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .guide-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.1);
+      color: var(--forest-pale);
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .guide-panel h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .guide-panel > p {
+      color: rgba(255,255,255,0.55);
+      font-size: 0.88rem;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .guide-steps {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .g-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .g-step:last-child { border-bottom: none; }
+
+    .g-num {
+      width: 28px; height: 28px;
+      min-width: 28px;
+      background: var(--saffron);
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+
+    .g-content strong {
+      display: block;
+      color: white;
+      font-size: 0.87rem;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .g-content span {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.79rem;
+      line-height: 1.55;
+    }
+
+    /* Right form panel */
+    .reg-form-panel {
+      padding: 56px 56px;
+      overflow-y: auto;
+      background: var(--cream);
+    }
+
+    .form-heading {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.7rem;
+      color: var(--charcoal);
+      margin-bottom: 6px;
+    }
+
+    .form-sub-text {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .form-section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--charcoal);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin: 26px 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--forest-pale);
+    }
+
+    .form-section-title:first-of-type { margin-top: 0; }
+
+    .already-login {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    .already-login a {
+      color: var(--forest-mid);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .already-login a:hover { text-decoration: underline; }
+
+    @media (max-width: 900px) {
+      .reg-layout { grid-template-columns: 1fr; }
+      .guide-panel { padding: 40px 28px; }
+      .reg-form-panel { padding: 40px 28px; }
+    }
+  </style>
+  <script src="auth.js"></script>
+  <script src="translations.js"></script>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">🏪</div>
+    VendorConnect
+  </a>
+  <nav><!-- nav.js --></nav>
+</header>
+
+<div class="page-wrap">
+  <div class="reg-layout">
+
+    <!-- Left guide panel -->
+    <div class="guide-panel">
+      <div class="guide-tag">📋 Step-by-step guide</div>
+      <h2>How to Register<br>Your Shop</h2>
+      <p>Follow these simple steps — no computer skills needed. If you need help, call us at +91 9876543210.</p>
+
+      <div class="guide-steps">
+        <div class="g-step">
+          <div class="g-num">1</div>
+          <div class="g-content">
+            <strong>Choose a Username</strong>
+            <span>Pick a simple name — like your name or shop name. Example: "raju_store" or "divya_flowers". Use only letters and numbers, no spaces.</span>
+          </div>
+        </div>
+        <div class="g-step">
+          <div class="g-num">2</div>
+          <div class="g-content">
+            <strong>Enter Your Shop Name</strong>
+            <span>Write your shop's full name as you'd like customers to see it. Example: "Raju's Fresh Vegetables".</span>
+          </div>
+        </div>
+        <div class="g-step">
+          <div class="g-num">3</div>
+          <div class="g-content">
+            <strong>Choose a Business Type</strong>
+            <span>Select the category that best describes your shop from the dropdown list.</span>
+          </div>
+        </div>
+        <div class="g-step">
+          <div class="g-num">4</div>
+          <div class="g-content">
+            <strong>Add Your Phone Number</strong>
+            <span>This is how customers will contact you. Enter your WhatsApp number if possible.</span>
+          </div>
+        </div>
+        <div class="g-step">
+          <div class="g-num">5</div>
+          <div class="g-content">
+            <strong>Create a Password</strong>
+            <span>Choose a password you'll remember easily — at least 6 characters. Write it down somewhere safe. You'll use this to log in every time.</span>
+          </div>
+        </div>
+        <div class="g-step">
+          <div class="g-num">6</div>
+          <div class="g-content">
+            <strong>Click Register & Wait</strong>
+            <span>Press the green button. The admin will review and approve your shop within 24 hours. You'll receive a confirmation call or message.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form panel -->
+    <div class="reg-form-panel">
+      <a href="vendor-login.html" class="back-link">← Back to Login</a>
+      <div class="form-heading" data-i18n="vreg.form_title">Register Your Shop</div>
+      <p class="form-sub-text">Free registration · Takes less than 5 minutes · Admin approval within 24 hours</p>
+
+      <!-- Section: Account Details -->
+      <div class="form-section-title" data-i18n="vreg.sec_account">Account Details</div>
+
+      <div class="form-group">
+        <label>Shop Owner's Full Name *</label>
+        <input type="text" id="reg-ownername" placeholder="e.g. Raju Kumar">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Username * <span style="font-weight:400; color:var(--muted);">(no spaces)</span></label>
+          <input type="text" id="reg-username" placeholder="e.g. raju_store">
+        </div>
+        <div class="form-group">
+          <label>Phone / WhatsApp Number *</label>
+          <input type="tel" id="reg-phone" placeholder="+91 XXXXX XXXXX">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Password *</label>
+          <input type="password" id="reg-password" placeholder="Min. 6 characters">
+        </div>
+        <div class="form-group">
+          <label>Confirm Password *</label>
+          <input type="password" id="reg-confirm" placeholder="Repeat your password">
+        </div>
+      </div>
+
+      <!-- Section: Shop Details -->
+      <div class="form-section-title" data-i18n="vreg.sec_shop">Shop Details</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Shop Name *</label>
+          <input type="text" id="reg-shopname" placeholder="e.g. Raju's Fresh Vegetables">
+        </div>
+        <div class="form-group">
+          <label>Business Type *</label>
+          <select id="reg-category">
+            <option value="">Select your category...</option>
+            <option>Vegetables & Fruits</option>
+            <option>Kirana / Grocery</option>
+            <option>Flowers</option>
+            <option>Clothing & Textiles</option>
+            <option>Electronics Repair</option>
+            <option>Food & Snacks</option>
+            <option>Dairy & Milk</option>
+            <option>Stationery</option>
+            <option>Medicine & Pharmacy</option>
+            <option>Hardware & Tools</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Shop Address</label>
+        <input type="text" id="reg-address" placeholder="e.g. Near Bus Stand, Hassan Market, Hassan">
+      </div>
+
+      <div class="form-group">
+        <label>Short Description / Anything else? <span style="font-weight:400; color:var(--muted);">(optional)</span></label>
+        <textarea id="reg-description" placeholder="e.g. Fresh organic vegetables available daily. We also provide home delivery..."></textarea>
+      </div>
+
+      <button class="btn-primary full" id="reg-btn" onclick="submitRegistration()" style="margin-top: 6px;">
+        ✓ Register My Shop Free
+      </button>
+
+      <div class="error-toast" id="reg-error"></div>
+      <div class="success-toast" id="reg-success">
+        ✅ &nbsp; Registration submitted! The admin will review your shop within 24 hours. You'll be contacted on your phone number.
+      </div>
+
+      <p class="already-login">
+        Already registered? <a href="vendor-login.html" data-i18n="vreg.already_link">Login to your shop →</a>
+      </p>
+    </div>
+
+  </div>
+
+  <footer>
+    <p data-i18n="footer.copy">© 2026 <strong>VendorConnect</strong> — Empowering local businesses in Hassan, Karnataka</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="vendor-login.html">Vendor Login</a>
+      <a href="admin-login.html">Admin</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  async function submitRegistration() {
+    const ownerName = document.getElementById('reg-ownername').value.trim();
+    const username = document.getElementById('reg-username').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const confirm = document.getElementById('reg-confirm').value;
+    const shopName = document.getElementById('reg-shopname').value.trim();
+    const category = document.getElementById('reg-category').value;
+    const address = document.getElementById('reg-address').value.trim();
+    const description = document.getElementById('reg-description').value.trim();
+
+    const errEl = document.getElementById('reg-error');
+    const sucEl = document.getElementById('reg-success');
+    const btn = document.getElementById('reg-btn');
+    
+    errEl.classList.remove('show');
+    sucEl.classList.remove('show');
+
+    // Simple validation
+    if (!ownerName || !username || !phone || !password || !shopName || !category) {
+      errEl.textContent = '⚠️ Please fill in all required fields (*)';
+      errEl.classList.add('show');
+      return;
+    }
+
+    if (password !== confirm) {
+      errEl.textContent = '⚠️ Passwords do not match';
+      errEl.classList.add('show');
+      return;
+    }
+
+    btn.innerHTML = '⏳ Submitting Application...';
+    btn.disabled = true;
+
+    const vendorData = {
+      ownerName,
+      username,
+      phone,
+      password,
+      shopName,
+      category,
+      address,
+      description
+    };
+
+    const res = await vcRegisterVendor(vendorData);
+    if (res.ok) {
+      sucEl.classList.add('show');
+      btn.innerHTML = '✓ Application Submitted';
+      sucEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      errEl.textContent = res.msg || '❌ Registration failed. Please try again.';
+      errEl.classList.add('show');
+      btn.innerHTML = '✓ Register My Shop Free';
+      btn.disabled = false;
+    }
+  }
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

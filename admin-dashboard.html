@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — VendorConnect</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── ADMIN DASHBOARD ── */
+    .dash-page {
+      min-height: calc(100vh - 68px);
+      background: linear-gradient(160deg, #f0f4ff 0%, var(--cream) 60%);
+      padding: 36px 5% 60px;
+    }
+
+    .dash-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .dash-topbar h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--charcoal);
+    }
+
+    .dash-topbar h1 span { color: var(--forest); }
+
+    .dash-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .admin-pill {
+      background: var(--forest-pale);
+      color: var(--forest);
+      padding: 5px 14px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .stat-card .stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .stat-pending  .stat-val { color: #D97706; }
+    .stat-approved .stat-val { color: var(--forest-mid); }
+    .stat-rejected .stat-val { color: #DC2626; }
+    .stat-total    .stat-val { color: var(--charcoal); }
+
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: white;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--muted);
+    }
+
+    .tab-btn:hover { border-color: var(--forest-light); color: var(--forest); }
+    .tab-btn.active { background: var(--forest); color: white; border-color: var(--forest); }
+    .tab-btn.tab-pending.active  { background: #D97706; border-color: #D97706; }
+    .tab-btn.tab-rejected.active { background: #DC2626; border-color: #DC2626; }
+
+    .vendors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+
+    .vendor-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+      animation: fadeInUp 0.35s ease both;
+    }
+
+    .vendor-card:hover { box-shadow: var(--shadow-med); }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .vc-header {
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .vc-header-left { flex: 1; min-width: 0; }
+
+    .vc-shop-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--charcoal);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .vc-category {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-pending  { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+    .status-approved { background: var(--forest-pale); color: var(--forest); border: 1px solid var(--forest-light); }
+    .status-rejected { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+    .status-suspended { background: #F3F4F6; color: #6B7280; border: 1px solid #D1D5DB; }
+
+    .vc-body {
+      padding: 18px 22px;
+    }
+
+    .vc-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 16px;
+      margin-bottom: 14px;
+    }
+
+    .vc-info-item {}
+
+    .vc-info-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .vc-info-val {
+      font-size: 0.87rem;
+      color: var(--charcoal);
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    .vc-info-item.full { grid-column: 1 / -1; }
+
+    .vc-description {
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.6;
+      background: var(--cream);
+      border-radius: 10px;
+      padding: 10px 13px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .vc-description:empty { display: none; }
+
+    .vc-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .vc-tag {
+      background: var(--forest-pale);
+      color: var(--forest);
+      padding: 3px 10px;
+      border-radius: 50px;
+      font-size: 0.73rem;
+      font-weight: 600;
+    }
+
+    .vc-reg-date {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* Reject reason input */
+    .reject-reason-wrap {
+      display: none;
+      margin-bottom: 12px;
+    }
+
+    .reject-reason-wrap textarea {
+      width: 100%;
+      padding: 10px 13px;
+      border-radius: 10px;
+      border: 1.5px solid #FCA5A5;
+      font-size: 0.84rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 70px;
+      background: #FEF2F2;
+      color: var(--charcoal);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .reject-reason-wrap textarea:focus { border-color: #DC2626; }
+
+    .vc-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-approve, .btn-reject, .btn-confirm-reject, .btn-cancel-reject {
+      flex: 1;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-approve {
+      background: var(--forest);
+      color: white;
+    }
+
+    .btn-approve:hover { background: var(--forest-mid); transform: translateY(-1px); }
+    .btn-approve:disabled { background: #9CA3AF; cursor: not-allowed; transform: none; }
+
+    .btn-reject {
+      background: white;
+      color: #DC2626;
+      border: 1.5px solid #FCA5A5;
+    }
+
+    .btn-reject:hover { background: #FEE2E2; }
+    .btn-reject:disabled { color: #9CA3AF; border-color: #D1D5DB; cursor: not-allowed; }
+
+    .btn-confirm-reject {
+      background: #DC2626;
+      color: white;
+    }
+
+    .btn-confirm-reject:hover { background: #B91C1C; }
+
+    .btn-cancel-reject {
+      background: white;
+      color: var(--muted);
+      border: 1.5px solid var(--border);
+      flex: 0 0 auto;
+      padding: 10px 16px;
+    }
+
+    .btn-cancel-reject:hover { background: var(--cream); }
+
+    .actioned-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 8px 0 2px;
+      text-align: center;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state p { font-size: 0.96rem; }
+
+    .loading-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .toast-container {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      padding: 13px 18px;
+      border-radius: 12px;
+      font-size: 0.87rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-med);
+      animation: slideInRight 0.3s ease;
+      max-width: 320px;
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(120%); opacity: 0; }
+      to   { transform: translateX(0);   opacity: 1; }
+    }
+
+    .toast-success { background: var(--forest); color: white; }
+    .toast-error   { background: #DC2626; color: white; }
+    .toast-info    { background: #1D4ED8; color: white; }
+
+    .btn-logout {
+      padding: 8px 18px;
+      border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: white;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover { background: #FEE2E2; color: #DC2626; border-color: #FCA5A5; }
+
+    .btn-refresh {
+      padding: 8px 16px;
+      border-radius: 50px;
+      border: 1.5px solid var(--forest-light);
+      background: white;
+      color: var(--forest);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-refresh:hover { background: var(--forest-pale); }
+
+    @media (max-width: 600px) {
+      .vendors-grid { grid-template-columns: 1fr; }
+      .vc-info-grid { grid-template-columns: 1fr; }
+      .dash-topbar h1 { font-size: 1.35rem; }
+    }
+  </style>
+  <script src="auth.js"></script>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">🏪</div>
+    VendorConnect
+  </a>
+  <nav id="admin-nav-right" style="gap:8px;">
+    <span class="admin-pill" id="admin-name-pill">Admin</span>
+    <button class="btn-refresh" onclick="loadVendors()">↻ Refresh</button>
+    <button class="btn-logout" onclick="vcLogout()">Logout</button>
+  </nav>
+</header>
+
+<div class="page-wrap">
+  <div class="dash-page">
+
+    <!-- Top bar -->
+    <div class="dash-topbar">
+      <h1>Admin <span>Dashboard</span></h1>
+      <div class="dash-meta">
+        <span id="last-updated">—</span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card stat-total">
+        <div class="stat-val" id="stat-total">—</div>
+        <div class="stat-label">Total Registrations</div>
+      </div>
+      <div class="stat-card stat-pending">
+        <div class="stat-val" id="stat-pending">—</div>
+        <div class="stat-label">Pending Review</div>
+      </div>
+      <div class="stat-card stat-approved">
+        <div class="stat-val" id="stat-approved">—</div>
+        <div class="stat-label">Approved</div>
+      </div>
+      <div class="stat-card stat-rejected">
+        <div class="stat-val" id="stat-rejected">—</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs">
+      <button class="tab-btn tab-all active" onclick="setFilter('all', this)">All</button>
+      <button class="tab-btn tab-pending"  onclick="setFilter('pending', this)">⏳ Pending</button>
+      <button class="tab-btn tab-approved" onclick="setFilter('approved', this)">✅ Approved</button>
+      <button class="tab-btn tab-rejected" onclick="setFilter('rejected', this)">❌ Rejected</button>
+    </div>
+    <div class="vendors-grid" id="vendors-grid">
+      <div class="loading-state">⏳ Loading vendor registrations...</div>
+    </div>
+
+  </div>
+</div>
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+(function () {
+  const role = vcGetRole();
+  if (role !== 'admin') {
+    window.location.href = 'admin-login.html';
+  }
+  const session = vcGetSession();
+  if (session && session.name) {
+    document.getElementById('admin-name-pill').textContent = '🔐 ' + session.name;
+  }
+})();
+
+let allVendors = [];
+let currentFilter = 'all';
+
+async function loadVendors() {
+  const grid = document.getElementById('vendors-grid');
+  grid.innerHTML = '<div class="loading-state">⏳ Fetching vendor registrations...</div>';
+
+  try {
+    const session = vcGetSession();
+    const res = await fetch('/api/v1/admin/vendors', {
+      headers: { 'Authorization': 'Bearer ' + session.token }
+    });
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.message || 'Failed to fetch vendors');
+
+    allVendors = data.data || [];
+    updateStats();
+    renderVendors();
+
+    document.getElementById('last-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+  } catch (err) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">⚠️</div>
+      <p>${err.message}</p>
+    </div>`;
+  }
+}
+
+function updateStats() {
+  const counts = { total: allVendors.length, pending: 0, approved: 0, rejected: 0 };
+  allVendors.forEach(v => {
+    if (counts[v.status] !== undefined) counts[v.status]++;
+  });
+  document.getElementById('stat-total').textContent    = counts.total;
+  document.getElementById('stat-pending').textContent  = counts.pending;
+  document.getElementById('stat-approved').textContent = counts.approved;
+  document.getElementById('stat-rejected').textContent = counts.rejected;
+}
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVendors();
+}
+
+function renderVendors() {
+  const grid = document.getElementById('vendors-grid');
+  const filtered = currentFilter === 'all'
+    ? allVendors
+    : allVendors.filter(v => v.status === currentFilter);
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <p>No ${currentFilter === 'all' ? '' : currentFilter + ' '}vendor registrations found.</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(v => buildVendorCard(v)).join('');
+}
+
+function buildVendorCard(v) {
+  const statusLabel = { pending: '⏳ Pending', approved: '✅ Approved', rejected: '❌ Rejected', suspended: '⏸ Suspended' };
+  const registeredDate = v.createdAt
+    ? new Date(v.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    : '—';
+
+  const tagsHtml = (v.tags && v.tags.length)
+    ? `<div class="vc-tags">${v.tags.map(t => `<span class="vc-tag">${t}</span>`).join('')}</div>`
+    : '';
+
+  const descHtml = v.description
+    ? `<div class="vc-description">"${v.description}"</div>` : '';
+
+  const isPending = v.status === 'pending';
+
+  const actionButtons = isPending ? `
+    <div class="reject-reason-wrap" id="reason-wrap-${v._id}">
+      <textarea id="reason-text-${v._id}" placeholder="Optional: reason for rejection..."></textarea>
+    </div>
+    <div class="vc-actions" id="actions-${v._id}">
+      <button class="btn-approve" id="btn-approve-${v._id}"
+        onclick="approveVendor('${v._id}')">
+        ✅ Approve
+      </button>
+      <button class="btn-reject" id="btn-reject-${v._id}"
+        onclick="showRejectConfirm('${v._id}')">
+        ❌ Reject
+      </button>
+    </div>
+    <div class="vc-actions" id="confirm-actions-${v._id}" style="display:none;">
+      <button class="btn-confirm-reject" onclick="rejectVendor('${v._id}')">Confirm Reject</button>
+      <button class="btn-cancel-reject"  onclick="cancelReject('${v._id}')">Cancel</button>
+    </div>
+  ` : `<p class="actioned-note">
+    ${v.status === 'approved' ? '✅ Approved' : '❌ Rejected'}
+    ${v.rejectionReason ? '· Reason: ' + v.rejectionReason : ''}
+  </p>`;
+
+  return `
+  <div class="vendor-card" id="card-${v._id}">
+    <div class="vc-header">
+      <div class="vc-header-left">
+        <div class="vc-shop-name">🏪 ${v.shopName}</div>
+        <div class="vc-category">${v.category}</div>
+      </div>
+      <span class="status-badge status-${v.status}">${statusLabel[v.status] || v.status}</span>
+    </div>
+    <div class="vc-body">
+      <div class="vc-info-grid">
+        <div class="vc-info-item">
+          <div class="vc-info-label">Owner</div>
+          <div class="vc-info-val">${v.ownerName}</div>
+        </div>
+        <div class="vc-info-item">
+          <div class="vc-info-label">Username</div>
+          <div class="vc-info-val">@${v.username}</div>
+        </div>
+        <div class="vc-info-item">
+          <div class="vc-info-label">Phone</div>
+          <div class="vc-info-val">${v.phone}</div>
+        </div>
+        <div class="vc-info-item">
+          <div class="vc-info-label">Email</div>
+          <div class="vc-info-val">${v.email || '—'}</div>
+        </div>
+        <div class="vc-info-item full">
+          <div class="vc-info-label">Address</div>
+          <div class="vc-info-val">${v.address || '—'}</div>
+        </div>
+        ${v.registrationNotes ? `
+        <div class="vc-info-item full">
+          <div class="vc-info-label">Registration Notes</div>
+          <div class="vc-info-val">${v.registrationNotes}</div>
+        </div>` : ''}
+      </div>
+
+      ${descHtml}
+      ${tagsHtml}
+
+      <div class="vc-reg-date">📅 Registered on ${registeredDate}</div>
+
+      ${actionButtons}
+    </div>
+  </div>`;
+}
+
+async function approveVendor(vendorId) {
+  const btn = document.getElementById('btn-approve-' + vendorId);
+  const rejectBtn = document.getElementById('btn-reject-' + vendorId);
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Approving...';
+  if (rejectBtn) rejectBtn.disabled = true;
+
+  try {
+    const session = vcGetSession();
+    const res = await fetch(`/api/v1/admin/vendors/${vendorId}/approve`, {
+      method: 'PATCH',
+      headers: { 'Authorization': 'Bearer ' + session.token }
+    });
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.message);
+
+    // Update local state
+    const idx = allVendors.findIndex(v => v._id === vendorId);
+    if (idx !== -1) allVendors[idx].status = 'approved';
+    updateStats();
+
+    // Update card status badge & hide buttons
+    const actionsEl   = document.getElementById('actions-' + vendorId);
+    const reasonWrap  = document.getElementById('reason-wrap-' + vendorId);
+    const statusBadge = document.querySelector(`#card-${vendorId} .status-badge`);
+
+    if (statusBadge) {
+      statusBadge.className = 'status-badge status-approved';
+      statusBadge.textContent = '✅ Approved';
+    }
+    if (actionsEl)  actionsEl.innerHTML = '<p class="actioned-note">✅ Approved just now</p>';
+    if (reasonWrap) reasonWrap.style.display = 'none';
+
+    showToast('✅ Vendor approved successfully!', 'success');
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = '✅ Approve';
+    if (rejectBtn) rejectBtn.disabled = false;
+    showToast('Error: ' + err.message, 'error');
+  }
+}
+
+function showRejectConfirm(vendorId) {
+  document.getElementById('reason-wrap-' + vendorId).style.display = 'block';
+  document.getElementById('actions-' + vendorId).style.display = 'none';
+  document.getElementById('confirm-actions-' + vendorId).style.display = 'flex';
+}
+
+function cancelReject(vendorId) {
+  document.getElementById('reason-wrap-' + vendorId).style.display = 'none';
+  document.getElementById('actions-' + vendorId).style.display = 'flex';
+  document.getElementById('confirm-actions-' + vendorId).style.display = 'none';
+}
+
+async function rejectVendor(vendorId) {
+  const confirmBtn = document.querySelector(`#confirm-actions-${vendorId} .btn-confirm-reject`);
+  const reason     = document.getElementById('reason-text-' + vendorId)?.value.trim() || '';
+
+  confirmBtn.disabled = true;
+  confirmBtn.innerHTML = '⏳ Rejecting...';
+
+  try {
+    const session = vcGetSession();
+    const res = await fetch(`/api/v1/admin/vendors/${vendorId}/reject`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': 'Bearer ' + session.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ reason })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    const idx = allVendors.findIndex(v => v._id === vendorId);
+    if (idx !== -1) {
+      allVendors[idx].status = 'rejected';
+      allVendors[idx].rejectionReason = reason;
+    }
+    updateStats();
+
+    const statusBadge   = document.querySelector(`#card-${vendorId} .status-badge`);
+    const confirmActions = document.getElementById('confirm-actions-' + vendorId);
+    const reasonWrap     = document.getElementById('reason-wrap-' + vendorId);
+
+    if (statusBadge) {
+      statusBadge.className = 'status-badge status-rejected';
+      statusBadge.textContent = '❌ Rejected';
+    }
+    if (confirmActions) confirmActions.innerHTML =
+      `<p class="actioned-note">❌ Rejected${reason ? ' · ' + reason : ''}</p>`;
+    if (reasonWrap) reasonWrap.style.display = 'none';
+
+    showToast('Vendor registration rejected.', 'info');
+
+  } catch (err) {
+    confirmBtn.disabled = false;
+    confirmBtn.innerHTML = 'Confirm Reject';
+    showToast('Error: ' + err.message, 'error');
+  }
+}
+
+function showToast(msg, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+loadVendors();
+// Auto-refresh every 60 seconds
+setInterval(loadVendors, 60000);
+</script>
+</body>
+</html>

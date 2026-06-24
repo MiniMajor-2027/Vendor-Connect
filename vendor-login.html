@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor Login — VendorConnect</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── VENDOR LOGIN PAGE ── */
+    .auth-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: calc(100vh - 68px);
+    }
+
+    /* Left decorative panel */
+    .auth-panel {
+      background: linear-gradient(160deg, var(--forest) 0%, var(--forest-mid) 60%, #1e8c5a 100%);
+      padding: 64px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-panel::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 320px; height: 320px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+
+    .auth-panel::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 260px; height: 260px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+    }
+
+    .panel-icon {
+      width: 68px; height: 68px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.9rem;
+      margin-bottom: 28px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .auth-panel h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .auth-panel > p {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .tip-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tip-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+    }
+
+    .tip-icon {
+      width: 32px; height: 32px;
+      min-width: 32px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .tip-text strong {
+      display: block;
+      color: white;
+      font-size: 0.87rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .tip-text span {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    /* Right form panel */
+    .auth-form-panel {
+      padding: 64px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: var(--cream);
+    }
+
+    .form-heading {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.75rem;
+      color: var(--charcoal);
+      margin-bottom: 6px;
+    }
+
+    .form-sub-text {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 22px 0;
+    }
+
+    .divider hr {
+      flex: 1;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    .divider span {
+      font-size: 0.78rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .register-link-box {
+      background: var(--saffron-pale);
+      border: 1px solid rgba(255,107,44,0.2);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .register-link-box p {
+      font-size: 0.87rem;
+      color: var(--charcoal);
+      line-height: 1.5;
+    }
+
+    .register-link-box p span { color: var(--muted); }
+
+    @media (max-width: 768px) {
+      .auth-layout { grid-template-columns: 1fr; }
+      .auth-panel { display: none; }
+      .auth-form-panel { padding: 48px 28px; }
+    }
+  </style>
+  <script src="auth.js"></script>
+  <script src="translations.js"></script>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">🏪</div>
+    VendorConnect
+  </a>
+  <nav><!-- nav.js --></nav>
+</header>
+
+<div class="page-wrap">
+  <div class="auth-layout">
+
+    <!-- Left info panel -->
+    <div class="auth-panel">
+      <div class="panel-icon">🏪</div>
+      <h2 data-i18n="vlogin.panel_h2">Welcome Back,<br>Vendor!</h2>
+      <p>Log in to manage your shop listing, update products, and connect with customers in Hassan.</p>
+
+      <div class="tip-list">
+        <div class="tip-item">
+          <div class="tip-icon">👤</div>
+          <div class="tip-text">
+            <strong>Use your Username</strong>
+            <span>Enter the username you chose when you registered your shop.</span>
+          </div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon">🔑</div>
+          <div class="tip-text">
+            <strong>Enter your Password</strong>
+            <span>This is the password you created during registration.</span>
+          </div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon">❓</div>
+          <div class="tip-text">
+            <strong>Forgot your details?</strong>
+            <span>Contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d4e484d4d524f497d4b585359524f5e525353585e49135e5250">[email&#160;protected]</a> or call +91 9876543210 and we'll help you recover your account.</span>
+          </div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon">🆕</div>
+          <div class="tip-text">
+            <strong>New vendor?</strong>
+            <span>If you haven't registered your shop yet, click "Register New Shop" on the right side.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form -->
+    <div class="auth-form-panel">
+      <a href="index.html" class="back-link">← Back to Home</a>
+      <div class="form-heading" data-i18n="vlogin.form_title">Vendor Login</div>
+      <p class="form-sub-text">Enter your shop username and password to access your dashboard.</p>
+
+      <div class="form-group">
+        <label>Your Username</label>
+        <input type="text" id="vendor-username" placeholder="e.g. raju_store">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="vendor-password" placeholder="Enter your password">
+      </div>
+
+      <button class="btn-forest full" onclick="vendorLogin()" style="margin-top: 6px;">
+        Login to My Shop →
+      </button>
+
+      <div style="text-align:right; margin-top: 10px;">
+        <a href="#" onclick="showForgotVendor(); return false;" style="font-size:0.82rem; color:var(--forest-mid); text-decoration:none; font-weight:600;">Forgot password?</a>
+      </div>
+
+      <div class="error-toast" id="vendor-error">
+        ❌ &nbsp; Incorrect username, shop name, or password. Please try again.
+      </div>
+
+      <div class="success-toast" id="vendor-forgot-msg" style="display:none; margin-top:12px; background:var(--forest-pale); border:1px solid var(--forest-light); color:var(--forest); padding:14px 18px; border-radius:var(--radius); font-size:0.87rem; font-weight:500; line-height:1.6;">
+        📞 &nbsp; To reset your password, call or WhatsApp us at <strong>+91 9876543210</strong> or email <strong>support@vendorconnect.com</strong> with your username and shop name. We'll help you within 24 hours.
+      </div>
+
+      <div class="divider">
+        <hr><span data-i18n="vlogin.divider">New to VendorConnect?</span><hr>
+      </div>
+
+      <div class="register-link-box">
+        <div>
+          <p><strong data-i18n="vlogin.new_title">Don't have an account yet?</strong></p>
+          <p><span>Register your shop — it's free and takes 5 minutes.</span></p>
+        </div>
+        <a href="vendor-register.html" class="btn-primary" style="white-space: nowrap;" data-i18n="nav.register" data-i18n="vlogin.new_btn">Register Shop</a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p data-i18n="footer.copy">© 2026 <strong>VendorConnect</strong> — Empowering local businesses in Hassan, Karnataka</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="products.html">Products</a>
+      <a href="shops.html">Shops</a>
+      <a href="wishlist.html" data-i18n="nav.wishlist">Wishlist</a>
+      <a href="vendor-login.html">Vendor Login</a>
+      <a href="vendor-register.html" data-i18n="nav.register">Register Shop</a>
+      <a href="admin-login.html">Admin</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  /* Redirect already-logged-in vendors away from this page */
+  (function () {
+    const role = vcGetRole();
+    if (role === 'vendor') { window.location.href = 'vendor-dashboard.html'; return; }
+    if (role === 'admin')  { window.location.href = 'index.html'; return; }
+  })();
+
+  async function vendorLogin() {
+    const username = document.getElementById('vendor-username').value.trim();
+    const password = document.getElementById('vendor-password').value;
+    const errEl    = document.getElementById('vendor-error');
+    const btn      = document.querySelector('.btn-forest');
+    errEl.classList.remove('show');
+
+    if (!username || !password) {
+      errEl.textContent = '⚠️  Please enter both username and password.';
+      errEl.classList.add('show');
+      return;
+    }
+
+    btn.innerHTML = '⏳ Loading...';
+    btn.disabled = true;
+
+    const result = await vcLoginVendor(username, password);
+    if (result.ok) {
+      window.location.href = 'vendor-dashboard.html';
+    } else {
+      btn.innerHTML = 'Login to My Shop →';
+      btn.disabled = false;
+      errEl.textContent = result.msg;
+      errEl.classList.add('show');
+    }
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') vendorLogin();
+  });
+
+  function showForgotVendor() {
+    const msg = document.getElementById('vendor-forgot-msg');
+    msg.style.display = msg.style.display === 'none' ? 'block' : 'none';
+  }
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

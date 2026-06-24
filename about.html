@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — VendorConnect</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── ABOUT PAGE ── */
+    .about-hero {
+      background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 100%);
+      padding: 80px 7% 72px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-hero::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 320px; height: 320px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+
+    .about-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 260px; height: 260px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+    }
+
+    .about-hero h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 800;
+      color: white;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .about-hero p {
+      color: rgba(255,255,255,0.7);
+      font-size: 1.02rem;
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.75;
+      position: relative;
+      z-index: 1;
+    }
+
+    .about-body {
+      padding: 68px 7%;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-bottom: 60px;
+    }
+
+    .feat-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+
+    .feat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-med);
+      border-color: var(--saffron-light);
+    }
+
+    .feat-icon {
+      font-size: 2rem;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .feat-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.97rem;
+      margin-bottom: 8px;
+      color: var(--charcoal);
+    }
+
+    .feat-card p {
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* FAQ */
+    .faq-block {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 44px;
+      border: 1px solid var(--border);
+      margin-bottom: 60px;
+    }
+
+    .faq-block-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--charcoal);
+      margin-bottom: 28px;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 18px 0;
+    }
+
+    .faq-item:last-child { border-bottom: none; }
+
+    .faq-q {
+      font-weight: 600;
+      font-size: 0.94rem;
+      color: var(--charcoal);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .faq-q::before {
+      content: 'Q';
+      background: var(--saffron);
+      color: white;
+      min-width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    .faq-a {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.75;
+      padding-left: 34px;
+    }
+
+    /* Mission strip */
+    .mission-strip {
+      background: var(--saffron-pale);
+      border-radius: var(--radius-lg);
+      padding: 44px 48px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      border: 1px solid rgba(255,107,44,0.15);
+    }
+
+    .mission-icon {
+      font-size: 3rem;
+      flex-shrink: 0;
+    }
+
+    .mission-strip h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--charcoal);
+      margin-bottom: 8px;
+    }
+
+    .mission-strip p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 768px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .faq-block { padding: 28px 22px; }
+      .mission-strip { flex-direction: column; text-align: center; padding: 32px 24px; }
+    }
+  </style>
+  <script src="auth.js"></script>
+  <script src="translations.js"></script>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">🏪</div>
+    VendorConnect
+  </a>
+  <nav><!-- nav.js --></nav>
+</header>
+
+<div class="page-wrap">
+
+  <!-- Hero -->
+  <div class="about-hero">
+    <h2 data-i18n="about.h2">About VendorConnect</h2>
+    <p>We believe every local vendor deserves the power of technology — without the complexity. Built for the streets of Hassan, for real people.</p>
+  </div>
+
+  <div class="about-body">
+
+    <!-- Features -->
+    <div class="section-label">What We Offer</div>
+    <div class="section-title" style="margin-bottom: 14px;">Everything Your Shop Needs</div>
+    <p class="section-sub">Simple tools that make a real difference for local vendors.</p>
+
+    <div class="features-grid">
+      <div class="feat-card">
+        <span class="feat-icon">🏪</span>
+        <h3>Built for Local Vendors</h3>
+        <p>Designed for kirana stores, vegetable vendors, flower sellers, tailors, and every small business in Hassan.</p>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">📱</span>
+        <h3>Works on Any Phone</h3>
+        <p>No computer required. Manage your shop listing right from your smartphone, even on basic Android phones.</p>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">🆓</span>
+        <h3>Always Free</h3>
+        <p>Basic features are completely free. We believe digital tools should be accessible to every business, big or small.</p>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">📍</span>
+        <h3>Local Discovery</h3>
+        <p>Customers nearby can easily find your shop and products. Your business appears on local searches automatically.</p>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">🔒</span>
+        <h3>Safe & Verified</h3>
+        <p>All vendors are reviewed by our admin team before going live, ensuring a trustworthy marketplace for customers.</p>
+      </div>
+      <div class="feat-card">
+        <span class="feat-icon">💬</span>
+        <h3>Direct Customer Connect</h3>
+        <p>Customers reach you directly — no middlemen, no commissions. The relationship stays between you and your customer.</p>
+      </div>
+    </div>
+
+    <!-- Mission -->
+    <div class="mission-strip" style="margin-bottom: 60px;">
+      <div class="mission-icon">🌱</div>
+      <div>
+        <h3 data-i18n="about.mission_h3">Our Mission</h3>
+        <p>VendorConnect was started to bridge the gap between local vendors and digital tools. Many small business owners in Hassan and Karnataka have great products but little online presence. We want to change that — one shop at a time — with a platform that is simple, local, and truly helpful.</p>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-block">
+      <div class="faq-block-title" data-i18n="about.faq_title">Frequently Asked Questions</div>
+
+      <div class="faq-item">
+        <div class="faq-q">Who can use VendorConnect?</div>
+        <div class="faq-a">Any local vendor or small business owner in Hassan and surrounding areas. This includes kirana stores, vegetable sellers, flower vendors, tailors, repair shops, dairy sellers, pharmacies, and more.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Is it really free to join?</div>
+        <div class="faq-a">Yes! Registering your shop and listing your products is completely free. There are no hidden charges for getting your shop online.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Do I need any technical skills or a computer?</div>
+        <div class="faq-a">No technical skills needed at all. If you can use WhatsApp on a phone, you can use VendorConnect. We also provide a step-by-step guide on the registration page to help you get started easily.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">How long does it take for my shop to go live?</div>
+        <div class="faq-a">After you register, our admin team reviews your shop within 24 hours and approves it. You'll be notified via your phone number once your shop is live.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">How do I log in after registering?</div>
+        <div class="faq-a">Go to the "Vendor Login" page (from the navigation at the top). Enter the username, shop name, and password you created when you registered. If you forget your password, contact us and we'll help.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">What if I need help using the website?</div>
+        <div class="faq-a">You can send us a message through the Contact page, email us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f7c7a7f7f607d7b4f796a616b607d6c6061616a6c7b216c6062">[email&#160;protected]</a>, or call us on +91 9876543210. Our team is happy to guide you personally, even in Kannada.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Can customers contact me directly?</div>
+        <div class="faq-a">Yes! Your phone number is shown on your shop page so customers can call or WhatsApp you directly. There is no intermediary and no commission charged.</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div style="text-align: center; padding: 10px 0 20px;">
+      <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 20px;">Ready to put your shop on the map?</p>
+      <a href="vendor-register.html" class="btn-primary" style="margin-right: 14px;" data-i18n="about.cta_btn1">Register Your Shop Free →</a>
+      <a href="contact.html" class="btn-outline" data-i18n="about.cta_btn2">Contact Us</a>
+    </div>
+
+  </div>
+
+  <footer>
+    <p data-i18n="footer.copy">© 2026 <strong>VendorConnect</strong> — Empowering local businesses in Hassan, Karnataka</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="products.html" data-i18n="footer.products">Products</a>
+      <a href="wishlist.html" data-i18n="nav.wishlist">Wishlist</a>
+      <a href="vendor-login.html">Vendor Login</a>
+      <a href="vendor-register.html" data-      <a href="vendor-register.html" data-i18n="nav.register">Register Shop</a>
+      <a href="admin-login.html">Admin</a>
+    </div>
+  </footer>
+</div>
+<script src="nav.js"></script>
+</body>
+</html>

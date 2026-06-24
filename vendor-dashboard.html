@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Shop Dashboard — VendorConnect</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="translations.js"></script>
+  <script src="auth.js"></script>
+  <style>
+    .dash-hero {
+      background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 100%);
+      padding: 44px 7% 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .dash-hero-left h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    .dash-hero-left p { color: rgba(255,255,255,0.65); font-size: 0.92rem; }
+
+    .dash-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .dash-stat {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      text-align: center;
+      min-width: 90px;
+    }
+
+    .ds-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: white;
+    }
+
+    .ds-label { font-size: 0.72rem; color: rgba(255,255,255,0.6); margin-top: 3px; }
+
+    .dash-body {
+      padding: 40px 7% 64px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .dash-section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--charcoal);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .item-count-badge {
+      background: var(--forest-pale);
+      color: var(--forest-mid);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 50px;
+    }
+
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .pl-item {
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.2s;
+    }
+
+    .pl-item:hover { border-color: var(--forest-light); box-shadow: var(--shadow-soft); }
+
+    .pl-emoji {
+      width: 48px; height: 48px;
+      background: var(--cream);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
+    .pl-info { flex: 1; min-width: 0; }
+
+    .pl-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--charcoal);
+      margin-bottom: 3px;
+    }
+
+    .pl-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+    .pl-price { font-size: 0.85rem; font-weight: 700; color: var(--forest); }
+
+    .pl-cat {
+      font-size: 0.72rem;
+      background: var(--forest-pale);
+      color: var(--forest-mid);
+      padding: 2px 9px;
+      border-radius: 50px;
+      font-weight: 600;
+    }
+
+    .pl-stock { font-size: 0.72rem; padding: 2px 9px; border-radius: 50px; font-weight: 600; }
+    .pl-stock.in  { background: var(--forest-pale); color: var(--forest-mid); }
+    .pl-stock.out { background: #fff0f0; color: #c0392b; }
+
+    .pl-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    .btn-edit {
+      padding: 7px 14px;
+      border-radius: 9px;
+      border: 2px solid var(--border);
+      background: white;
+      color: var(--charcoal);
+      font-size: 0.79rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .btn-edit:hover { border-color: var(--forest-light); color: var(--forest); }
+
+    .btn-delete {
+      padding: 7px 12px;
+      border-radius: 9px;
+      border: 2px solid #ffb3b3;
+      background: white;
+      color: #c0392b;
+      font-size: 0.79rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .btn-delete:hover { background: #fff0f0; border-color: #c0392b; }
+
+    .empty-dash {
+      text-align: center;
+      padding: 48px 20px;
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 2px dashed var(--border);
+      color: var(--muted);
+    }
+
+    .empty-dash .es-icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+    .empty-dash h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      color: var(--charcoal);
+      margin-bottom: 6px;
+    }
+
+    .add-form-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 28px 24px;
+      position: sticky;
+      top: 90px;
+    }
+
+    .afc-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--charcoal);
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--forest-pale);
+    }
+
+    .emoji-picker {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .emoji-opt {
+      font-size: 1.25rem;
+      padding: 4px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      background: var(--cream);
+      user-select: none;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      min-width: 0;
+      line-height: 1;
+    }
+
+    .emoji-opt:hover { border-color: var(--forest-light); transform: scale(1.1); }
+    .emoji-opt.selected { border-color: var(--forest); background: var(--forest-pale); }
+
+    .form-group label { font-size: 0.77rem; }
+    .form-group input, .form-group select, .form-group textarea {
+      padding: 10px 13px;
+      font-size: 0.87rem;
+    }
+
+    .del-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 600;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .del-overlay.open { display: flex; }
+
+    .del-modal {
+      background: white;
+      border-radius: 20px;
+      padding: 36px 32px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: var(--shadow-strong);
+      animation: fadeInUp 0.25s ease both;
+    }
+
+    .del-modal h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--charcoal);
+      margin-bottom: 10px;
+    }
+
+    .del-modal p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .del-btns { display: flex; gap: 12px; justify-content: center; }
+
+    .btn-cancel-del {
+      padding: 10px 22px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      background: white;
+      color: var(--charcoal);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .btn-confirm-del {
+      padding: 10px 22px;
+      border-radius: 10px;
+      border: none;
+      background: #c0392b;
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .btn-confirm-del:hover { background: #a93226; }
+
+    .toast-fixed {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--forest);
+      color: white;
+      padding: 14px 20px;
+      border-radius: var(--radius);
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-med);
+      display: none;
+      z-index: 700;
+      animation: fadeInUp 0.3s ease both;
+    }
+
+    .toast-fixed.show { display: block; }
+
+    @media (max-width: 900px) {
+      .dash-body { grid-template-columns: 1fr; }
+      .add-form-card { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">🏪</div>
+    VendorConnect
+  </a>
+  <nav><!-- filled by nav.js --></nav>
+</header>
+
+<div class="page-wrap">
+
+  <div class="dash-hero" id="dash-hero">
+    <div class="dash-hero-left">
+      <h2 id="dash-shop-name">My Shop Dashboard</h2>
+      <p id="dash-shop-sub">Manage your products, update stock, and keep your shop fresh daily.</p>
+    </div>
+    <div class="dash-stats">
+      <div class="dash-stat">
+        <div class="ds-num" id="stat-total">0</div>
+        <div class="ds-label">Products</div>
+      </div>
+      <div class="dash-stat">
+        <div class="ds-num" id="stat-instock">0</div>
+        <div class="ds-label">In Stock</div>
+      </div>
+      <div class="dash-stat">
+        <div class="ds-num" id="stat-outstock">0</div>
+        <div class="ds-label">Out of Stock</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-body">
+
+    <div>
+      <div class="dash-section-title">
+        Your Products
+        <span class="item-count-badge" id="count-badge">0 items</span>
+      </div>
+      <div class="product-list" id="product-list"></div>
+    </div>
+
+    <div class="add-form-card">
+      <div class="afc-title" id="form-title">+ Add New Product</div>
+
+      <div class="form-group">
+        <label>Product Emoji / Icon</label>
+        <div class="emoji-picker" id="emoji-picker"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Product Name *</label>
+        <input type="text" id="f-name" placeholder="e.g. Fresh Tomatoes">
+      </div>
+
+      <div class="form-group">
+        <label>Price (₹) *</label>
+        <input type="number" id="f-price" placeholder="e.g. 40" min="0">
+      </div>
+
+      <div class="form-group">
+        <label>Unit</label>
+        <select id="f-unit">
+          <option>per kg</option>
+          <option>per litre</option>
+          <option>per piece</option>
+          <option>per bunch</option>
+          <option>per dozen</option>
+          <option>per pack</option>
+          <option>per metre</option>
+          <option>per 500 ml</option>
+          <option>per strip</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Category *</label>
+        <select id="f-category">
+          <option>Vegetables & Fruits</option>
+          <option>Kirana / Grocery</option>
+          <option>Flowers</option>
+          <option>Dairy & Milk</option>
+          <option>Food & Snacks</option>
+          <option>Medicine & Pharmacy</option>
+          <option>Clothing & Textiles</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Stock Status</label>
+        <select id="f-stock">
+          <option value="in">✅ In Stock</option>
+          <option value="out">❌ Out of Stock</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Short Description</label>
+        <textarea id="f-desc" placeholder="e.g. Farm-fresh, daily stock..." style="min-height:68px;"></textarea>
+      </div>
+
+      <button class="btn-primary full" id="form-submit-btn" onclick="submitProduct()">
+        + Add Product
+      </button>
+      <button class="btn-outline full" id="form-cancel-btn" onclick="cancelEdit()" style="margin-top:8px; display:none;">
+        Cancel Edit
+      </button>
+
+      <div class="error-toast" id="form-error"></div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026 <strong>VendorConnect</strong> — Empowering local businesses in Hassan, Karnataka</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </footer>
+</div>
+
+<div class="del-overlay" id="del-overlay">
+  <div class="del-modal">
+    <h3>Delete Product?</h3>
+    <p id="del-product-name">Are you sure you want to remove this product from your shop? This cannot be undone.</p>
+    <div class="del-btns">
+      <button class="btn-cancel-del" onclick="cancelDelete()">Keep it</button>
+      <button class="btn-confirm-del" onclick="confirmDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-fixed" id="fixed-toast"></div>
+
+<script src="nav.js"></script>
+<script>
+  if (!vcGuard('vendor', 'vendor-login.html')) { throw new Error('Not authorised'); }
+
+  const session = vcGetSession();
+  document.getElementById('dash-shop-name').textContent = '🏪 ' + session.shopname;
+  document.getElementById('dash-shop-sub').textContent  = 'Hello ' + session.name + '! Manage your daily products here.';
+
+  const STORAGE_KEY = 'vc_products_shop_' + session.shopId;
+
+  async function loadProducts() {
+    try {
+      const response = await fetch('/api/v1/products/my', {
+        headers: { 'Authorization': `Bearer ${session.token}` }
+      });
+      const result = await response.json();
+      return result.success ? result.data : [];
+    } catch (error) {
+      console.error('Failed to load products:', error);
+      return [];
+    }
+  }
+
+  // Stats are now calculated after loading from API
+  async function refreshDashboard() {
+    const list = await loadProducts();
+    updateStats(list);
+    renderList(list);
+  }
+
+  const EMOJIS = ['🍅','🧄','🌾','🥛','🍶','🧈','💐','🌹','🌼','🫘','🍌','🥕','🫕','🥨','🧁','💊','🩹','🧴','🛒','🌿','🥬','🍋','🥦','🧅','🍞','🥚','🥩'];
+  let selectedEmoji = EMOJIS[0];
+
+  function buildEmojiPicker() {
+    const picker = document.getElementById('emoji-picker');
+    picker.innerHTML = '';
+    EMOJIS.forEach(em => {
+      const btn = document.createElement('span');
+      btn.className = 'emoji-opt' + (em === selectedEmoji ? ' selected' : '');
+      btn.textContent = em;
+      btn.onclick = () => {
+        selectedEmoji = em;
+        picker.querySelectorAll('.emoji-opt').forEach(e => e.classList.remove('selected'));
+        btn.classList.add('selected');
+      };
+      picker.appendChild(btn);
+    });
+  }
+
+  buildEmojiPicker();
+
+  function updateStats(list) {
+    if (!list) return;
+    const inStock  = list.filter(p => !p.stockStatus || p.stockStatus === 'in').length;
+    const outStock = list.filter(p => p.stockStatus === 'out').length;
+    
+    document.getElementById('stat-total').textContent    = list.length;
+    document.getElementById('stat-instock').textContent  = inStock;
+    document.getElementById('stat-outstock').textContent = outStock;
+    document.getElementById('count-badge').textContent   = list.length + ' item' + (list.length !== 1 ? 's' : '');
+  }
+
+  function renderList(list) {
+    const container = document.getElementById('product-list');
+
+    if (!list || !list.length) {
+      container.innerHTML = `
+        <div class="empty-dash">
+          <div class="es-icon">📦</div>
+          <h3>No products yet</h3>
+          <p>Use the form on the right to add your first product!</p>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = '';
+    list.forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'pl-item';
+      row.dataset.id = p._id;
+
+      const nameEl  = document.createElement('div');
+      nameEl.className = 'pl-name';
+      nameEl.textContent = p.name;
+
+      const priceEl = document.createElement('span');
+      priceEl.className = 'pl-price';
+      priceEl.innerHTML = '₹' + p.price + ' <small style="font-weight:400;color:var(--muted);">' + p.unit + '</small>';
+
+      const catEl = document.createElement('span');
+      catEl.className = 'pl-cat';
+      catEl.textContent = p.category;
+
+      const stockEl = document.createElement('span');
+      stockEl.className = 'pl-stock ' + (p.stockStatus || 'in');
+      stockEl.textContent = (p.stockStatus === 'out') ? '❌ Out of Stock' : '✅ In Stock';
+
+      const meta = document.createElement('div');
+      meta.className = 'pl-meta';
+      meta.appendChild(priceEl);
+      meta.appendChild(catEl);
+      meta.appendChild(stockEl);
+
+      const info = document.createElement('div');
+      info.className = 'pl-info';
+      info.appendChild(nameEl);
+      info.appendChild(meta);
+
+      const emojiEl = document.createElement('div');
+      emojiEl.className = 'pl-emoji';
+      emojiEl.textContent = p.emoji || '📦';
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'btn-edit';
+      editBtn.textContent = '✏️ Edit';
+      editBtn.onmousedown = (e) => e.stopPropagation();
+      editBtn.onclick = () => editProduct(p);
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-delete';
+      delBtn.textContent = '🗑️';
+      delBtn.onmousedown = (e) => e.stopPropagation();
+      delBtn.onclick = () => startDelete(p._id, p.name);
+
+      const actions = document.createElement('div');
+      actions.className = 'pl-actions';
+      actions.appendChild(editBtn);
+      actions.appendChild(delBtn);
+
+      row.appendChild(emojiEl);
+      row.appendChild(info);
+      row.appendChild(actions);
+      container.appendChild(row);
+    });
+  }
+
+  // Initial load
+  refreshDashboard();
+
+  let editingId = null;
+
+  async function submitProduct() {
+    const name  = document.getElementById('f-name').value.trim();
+    const price = document.getElementById('f-price').value.trim();
+    const unit  = document.getElementById('f-unit').value;
+    const category = document.getElementById('f-category').value;
+    const stockStatus = document.getElementById('f-stock').value;
+    const description  = document.getElementById('f-desc').value.trim();
+    const btn = document.getElementById('form-submit-btn');
+    const errEl = document.getElementById('form-error');
+    
+    errEl.classList.remove('show');
+
+    if (!name || !price) {
+      errEl.textContent = '⚠️  Please enter at least a name and price.';
+      errEl.classList.add('show');
+      return;
+    }
+
+    btn.innerHTML = '⏳ Saving...';
+    btn.disabled = true;
+
+    try {
+      const isEdit = editingId !== null;
+      const url = isEdit ? `/api/v1/products/${editingId}` : '/api/v1/products';
+      const method = isEdit ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method: method,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.token}`
+        },
+        body: JSON.stringify({ emoji: selectedEmoji, name, price: parseFloat(price), unit, category, stockStatus, description })
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        showToast(isEdit ? '✅ Product updated!' : '✅ Product added!');
+        cancelEdit();
+        refreshDashboard();
+      } else {
+        errEl.textContent = result.message || 'Failed to save product';
+        errEl.classList.add('show');
+      }
+    } catch (error) {
+      errEl.textContent = '🌐 Connection error';
+      errEl.classList.add('show');
+    } finally {
+      btn.innerHTML = isEdit ? 'Save Changes' : '+ Add Product';
+      btn.disabled = false;
+    }
+  }
+
+  function editProduct(p) {
+    editingId = p._id;
+    selectedEmoji = p.emoji || '📦';
+    buildEmojiPicker();
+
+    document.getElementById('f-name').value          = p.name;
+    document.getElementById('f-price').value         = p.price;
+    document.getElementById('f-unit').value          = p.unit;
+    document.getElementById('f-category').value      = p.category;
+    document.getElementById('f-stock').value         = p.stockStatus || 'in';
+    document.getElementById('f-desc').value          = p.description || '';
+    
+    document.getElementById('form-title').textContent       = '✏️ Edit Product';
+    document.getElementById('form-submit-btn').textContent  = 'Save Changes';
+    document.getElementById('form-cancel-btn').style.display = 'block';
+
+    document.querySelector('.add-form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function cancelEdit() {
+    editingId = null;
+    clearForm();
+    document.getElementById('form-title').textContent       = '+ Add New Product';
+    document.getElementById('form-submit-btn').textContent  = '+ Add Product';
+    document.getElementById('form-cancel-btn').style.display = 'none';
+  }
+
+  function clearForm() {
+    document.getElementById('f-name').value  = '';
+    document.getElementById('f-price').value = '';
+    document.getElementById('f-desc').value  = '';
+    document.getElementById('f-stock').value = 'in';
+    document.getElementById('form-error').classList.remove('show');
+    selectedEmoji = EMOJIS[0];
+    buildEmojiPicker();
+  }
+
+  let pendingDeleteId = null;
+
+  function startDelete(id, name) {
+    pendingDeleteId = id;
+    document.getElementById('del-product-name').textContent =
+      'Are you sure you want to remove "' + name + '" from your shop? This cannot be undone.';
+    document.getElementById('del-overlay').classList.add('open');
+  }
+
+  function cancelDelete() {
+    pendingDeleteId = null;
+    document.getElementById('del-overlay').classList.remove('open');
+  }
+
+  async function confirmDelete() {
+    if (pendingDeleteId === null) return;
+    
+    try {
+      const response = await fetch(`/api/v1/products/${pendingDeleteId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${session.token}` }
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        showToast('🗑️ Product removed.');
+        refreshDashboard();
+      }
+    } catch (error) {
+      console.error('Delete failed:', error);
+    }
+
+    pendingDeleteId = null;
+    document.getElementById('del-overlay').classList.remove('open');
+  }
+
+  document.getElementById('del-overlay').addEventListener('click', function(e) {
+    if (e.target === this) cancelDelete();
+  });
+
+  function showToast(msg) {
+    const t = document.getElementById('fixed-toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
